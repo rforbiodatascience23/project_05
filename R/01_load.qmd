@@ -17,6 +17,7 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 ```{r}
 # output: FALSE
 library(tidyverse)
+library(janitor)
 ```
 
 ```{r}
@@ -30,5 +31,34 @@ meta_table <- meta_table[-1,]
 ```
 
 ```{r}
-meta_table
+# Selecting and renaming the columns we are interested in
+meta_table <- meta_table |>
+  clean_names() |>
+  rownames_to_column(var = "Sample") |>
+  select(
+    c(
+    Sample, 
+    sample_characteristics_ch1,
+    sample_characteristics_ch1_2,
+    sample_characteristics_ch1_3,
+    sample_characteristics_ch1_4,
+    sample_characteristics_ch1_5,
+    sample_characteristics_ch1_6,
+    sample_characteristics_ch1_7,
+    sample_characteristics_ch1_8)
+  ) |>
+  rename(
+    all_of(c(Tissue = "sample_characteristics_ch1",
+    Tissue_type = "sample_characteristics_ch1_2",
+    Patient_id = "sample_characteristics_ch1_3",
+    Age = "sample_characteristics_ch1_4", 
+    Gender = "sample_characteristics_ch1_5",
+    Race = "sample_characteristics_ch1_6",
+    Smoker = "sample_characteristics_ch1_7",
+    BMI = "sample_characteristics_ch1_8"))
+  )
+```
+
+```{r}
+
 ```
