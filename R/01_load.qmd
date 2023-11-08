@@ -1,0 +1,34 @@
+---
+title: "01_load"
+format: html
+editor: visual
+---
+
+## Loading data
+
+```{r}
+# Loading the data
+path_gene = "../data/_raw/GSE151243_Raw_gene_counts_matrix.txt"
+path_meta = "../data/_raw/GSE151243_series_matrix.txt"
+gene_table <- read.table(path_gene, header = TRUE)
+meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
+```
+
+```{r}
+# output: FALSE
+library(tidyverse)
+```
+
+```{r}
+# output: FALSE
+# Pivoting the table and renaming the columns
+meta_table <- meta_table |>
+  t() |>
+    as.data.frame()
+colnames(meta_table) <- gsub('!', '', meta_table[1,])
+meta_table <- meta_table[-1,]
+```
+
+```{r}
+meta_table
+```
