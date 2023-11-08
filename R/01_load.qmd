@@ -60,5 +60,50 @@ meta_table <- meta_table |>
 ```
 
 ```{r}
+# Tidy columns (with no prefixes)
+meta_table <- meta_table |>
+  mutate(
+    Sample = substr(Sample, 25, 27),
+    Tissue = gsub("tissue: ", "", Tissue),
+    Tissue_type = gsub("tissue_type: ", "", Tissue_type),
+    Patient_id = gsub("patient_id: ", "", Patient_id),
+    Age = gsub("age: ", "", Age),
+    Gender = gsub("gender: ", "", Gender),
+    Race = gsub("race: ", "", Race),
+    Smoker= gsub("smoker: ", "", Smoker),
+    BMI= gsub("bmi: ", "", BMI),
+  )
+```
 
+```{r}
+# Same operations we want genes as columns
+gene_table <- gene_table |>
+  t() |>
+    as.data.frame()
+colnames(gene_table) <- gene_table[1,]
+gene_table <- gene_table[-1,]
+```
+
+```{r}
+# We change the Sample id and put it as a column
+gene_table <- gene_table |>
+  rownames_to_column(var = "Sample") |>
+  mutate(
+    Sample = substr(Sample, 25, 27)
+  )
+```
+
+```{r}
+# We join on patient ID
+final_table <- meta_table |>
+  left_join(
+    gene_table,
+    by = "Sample"
+  )
+    
+```
+
+```{r}
+# We save the corrected data frames at the end of this code
+write.table(final_table, file = "../data/meta_gene_table.tsv")
 ```
