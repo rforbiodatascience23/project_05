@@ -63,7 +63,7 @@ meta_table <- meta_table |>
 # Tidy columns (with no prefixes)
 meta_table <- meta_table |>
   mutate(
-    Sample = substr(Sample, 25, 27),
+    Sample = str_split_i(Sample, pattern="_", 2),
     Tissue = gsub("tissue: ", "", Tissue),
     Tissue_type = gsub("tissue_type: ", "", Tissue_type),
     Patient_id = gsub("patient_id: ", "", Patient_id),
@@ -89,7 +89,7 @@ gene_table <- gene_table[-1,]
 gene_table <- gene_table |>
   rownames_to_column(var = "Sample") |>
   mutate(
-    Sample = substr(Sample, 25, 27)
+    Sample = str_split_i(Sample, pattern="_", 2)
   )
 ```
 
@@ -105,5 +105,5 @@ final_table <- meta_table |>
 
 ```{r}
 # We save the corrected data frames at the end of this code
-write.table(final_table, file = "../data/meta_gene_table.tsv")
+write_tsv(final_table, file = "../data/meta_gene_table.tsv")
 ```
