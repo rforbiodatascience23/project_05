@@ -12,25 +12,24 @@ library(tidyverse)
 ```{r}
 # Loading the created dataset
 meta_gene_table = read_tsv("../data/meta_gene_table.tsv")
-
 ```
 
 ```{r}
 # Get the number of missing values
+# SUPER LONG run time for this cell
 missing_values <- meta_gene_table |>
   summarise(across(everything(), ~ sum(is.na(.))))
 ```
 
 ```{r}
 # Checking if some columns have missing values
+# Same result as above but super quick run time
 missing_values_t <- missing_values |>
   t() |>
   as.data.frame()
 colnames(missing_values_t) = c("Missing_values")
 missing_values_t |>
-  filter(
-    Missing_values != 0
-  )
+  filter(Missing_values != 0)
 ```
 
 ```{r}
@@ -65,15 +64,13 @@ zero_expression_genes <- meta_gene_table |>
   ungroup() |> 
   pivot_wider(names_from = name, values_from = sum) |> 
   colnames()
-  
 ```
+
 ```{r}
 # select non 0 expression genes from the data
 meta_gene_table <- meta_gene_table |> 
   select(-one_of(zero_expression_genes))
 ```
-
-
 
 ```{r}
 # We save the cleaned data frame
