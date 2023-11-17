@@ -19,7 +19,6 @@ data = read_tsv("../data/cleaned_meta_gene_table.tsv")
 
 ```{r}
 # lists of meta data columns and gene columns
-
 meta_cols <- c('Sample',
                'Tissue_type',
                'Gender',
@@ -31,7 +30,6 @@ meta_cols <- c('Sample',
 gene_cols <- data |> 
   select(-one_of(meta_cols)) |> 
   colnames()
-
 ```
 
 ```{r}
@@ -43,8 +41,6 @@ scaled_data <- data |>
   ungroup() |> 
   pivot_wider(names_from = name, values_from = value) |> 
   unnest(everything())
-  
-
 ```
 
 ```{r}
