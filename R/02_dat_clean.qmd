@@ -38,12 +38,43 @@ missing_values_t |>
 # Tissue: all rows are 'Skin', hence does not provide information
 # Patient_id: The same information as 'Sample'
 
-clean_meta_gene_table <- meta_gene_table |> 
+meta_gene_table <- meta_gene_table |> 
   select(!c('Tissue','Patient_id'))
+```
+
+```{r}
+# Remove genes that have 0 expression (observed when analysing expression significance)
+
+meta_cols <- c('Sample',
+               'Tissue_type',
+               'Gender',
+               'Race',
+               'Smoker',
+               'Age',
+               'BMI')
+gene_cols <- meta_gene_table |> 
+  select(-one_of(meta_cols)) |> 
+  colnames()
+
+# get genes names that have 0 expression
+non_zero_expression_genes <- meta_gene_table |>
+  pivot_longer(all_of(gene_cols)) |> 
+  group_by(name) |> 
+  summarise(sum = sum(value)) |> 
+  filter(sum != 0) |> 
+  ungroup() |> 
+  pivot_wider(names_from = name, values_from = sum) |> 
+  colnames()
+  
+```
+```{r}
+# select non 0 expression genes from the data
+meta_gene_table <- meta_gene_table |> 
+  select(all_of(non_zero_expression_genes))
 ```
 
 
 ```{r}
 # We save the cleaned data frame
-write_tsv(clean_meta_gene_table, file = "../data/cleaned_meta_gene_table.tsv")
+write_tsv(meta_gene_table, file = "../data/cleaned_meta_gene_table.tsv")
 ```
