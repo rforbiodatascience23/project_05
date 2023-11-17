@@ -57,11 +57,11 @@ gene_cols <- meta_gene_table |>
   colnames()
 
 # get genes names that have 0 expression
-non_zero_expression_genes <- meta_gene_table |>
+zero_expression_genes <- meta_gene_table |>
   pivot_longer(all_of(gene_cols)) |> 
   group_by(name) |> 
   summarise(sum = sum(value)) |> 
-  filter(sum != 0) |> 
+  filter(sum == 0) |> 
   ungroup() |> 
   pivot_wider(names_from = name, values_from = sum) |> 
   colnames()
@@ -70,8 +70,9 @@ non_zero_expression_genes <- meta_gene_table |>
 ```{r}
 # select non 0 expression genes from the data
 meta_gene_table <- meta_gene_table |> 
-  select(all_of(non_zero_expression_genes))
+  select(-one_of(zero_expression_genes))
 ```
+
 
 
 ```{r}
