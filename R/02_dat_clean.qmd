@@ -32,3 +32,18 @@ missing_values_t |>
     Missing_values != 0
   )
 ```
+
+```{r}
+# Drop Columns 'Tissue' and 'Patient_id'
+# Tissue: all rows are 'Skin', hence does not provide information
+# Patient_id: The same information as 'Sample'
+
+clean_meta_gene_table <- meta_gene_table |> 
+  select(!c('Tissue','Patient_id'))
+```
+
+
+```{r}
+# We save the cleaned data frame
+write_tsv(clean_meta_gene_table, file = "../data/cleaned_meta_gene_table.tsv")
+```
