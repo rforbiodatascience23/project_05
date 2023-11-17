@@ -5,7 +5,7 @@ editor: visual
 ---
 
 ```{r}
-# outut: FALSE
+# output: FALSE
 library(tidyverse)
 ```
 
@@ -29,6 +29,6 @@ missing_values_t <- missing_values |>
 colnames(missing_values_t) = c("Missing_values")
 missing_values_t |>
   filter(
-    Missing_values == 0
+    Missing_values != 0
   )
 ```
