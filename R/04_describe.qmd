@@ -1,0 +1,13 @@
+---
+title: "04_describe"
+format: html
+editor: visual
+---
+
+## Lets compile general data description here
+
+```{r}
+# load in augmented data for description
+data = read_tsv('../data/augmented_meta_gene_table.tsv')
+
+```
