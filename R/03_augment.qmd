@@ -1,0 +1,53 @@
+---
+title: "03_augment"
+format: html
+editor: visual
+---
+
+```{r}
+# output: FALSE
+library(tidyverse)
+```
+
+```{r}
+# output: FALSE
+# Loading the clean dataset
+data = read_tsv("../data/cleaned_meta_gene_table.tsv")
+```
+
+## Standardise gene expression values
+
+```{r}
+# lists of meta data columns and gene columns
+
+meta_cols <- c('Sample',
+               'Tissue_type',
+               'Gender',
+               'Race',
+               'Smoker',
+               'Age',
+               'BMI')
+
+gene_cols <- data |> 
+  select(-one_of(meta_cols)) |> 
+  colnames()
+
+```
+
+```{r}
+# group expression by genes and scale to 0 mean and 1 st. dev.
+scaled_data <- data |>
+  pivot_longer(all_of(gene_cols)) |> 
+  group_by(name) |> 
+  mutate(value = (value - mean(value))/sd(value)) |> 
+  ungroup() |> 
+  pivot_wider(names_from = name, values_from = value) |> 
+  unnest(everything())
+  
+
+```
+
+```{r}
+# We save the augmented data frame
+write_tsv(scaled_data, file = "../data/augmented_meta_gene_table.tsv")
+```
