@@ -1,0 +1,35 @@
+---
+title: "05_expression_significance"
+format: html
+editor: visual
+---
+
+## The idea
+
+The dataset at full contains 58.046 genes with their expression values for each of the 40 observations. To filter out the uninformative genes to the lesion/paralesion groups, a Student's t-Test could be performed on the scaled expressions. Genes with significant expression differences (p\<0.05) could be kept for further analysis.
+
+```{r}
+# load data
+data <- read_tsv('../data/augmented_meta_gene_table.tsv')
+```
+
+```{r}
+# lists of meta data columns and gene columns
+
+meta_cols <- c('Sample',
+               'Tissue_type',
+               'Gender',
+               'Race',
+               'Smoker',
+               'Age',
+               'BMI')
+
+gene_cols <- data |> 
+  select(-one_of(meta_cols)) |> 
+  colnames()
+```
+
+```{r}
+# group expression by genes and calculate students t test
+
+```
