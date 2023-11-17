@@ -42,7 +42,7 @@ meta_gene_table <- meta_gene_table |>
 ```
 
 ```{r}
-# Remove genes that have 0 expression (observed when analysing expression significance)
+# Remove genes that have 0 expression for all patients (observed when analysing expression significance)
 
 meta_cols <- c('Sample',
                'Tissue_type',
