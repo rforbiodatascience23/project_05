@@ -10,6 +10,7 @@ The dataset at full contains 58.046 genes with their expression values for each 
 
 ```{r}
 library(tidyverse)
+library(broom)
 ```
 
 ```{r}
@@ -34,7 +35,7 @@ gene_cols <- data |>
 ```
 
 ```{r}
-# THIS SECTION IS IN PROGRESS 
+# create linear models for each gene expression on Lesion/Perilesion groups
 long_data_nested <- data |>
   mutate(Tissue_type = case_when(Tissue_type == "Lesion" ~ 1,
                                  Tissue_type == "Perilesion" ~ 0)) |> 
@@ -45,13 +46,33 @@ long_data_nested <- data |>
   nest() |> 
   mutate('model_object' = map(.x = data,
                    .f = ~lm(formula = scaled_expr ~ Tissue_type,
-                            data = .x))) #|> 
-  #mutate(model_object_tidy = map(.x = model_object,
-  #                              ~tidy(.x,
-  #                                     conf.int = TRUE,
-  #                                     conf.level = 0.95)))
+                            data = .x))) |> 
+  mutate(model_object_tidy = map(.x = model_object,
+                                ~tidy(.x,
+                                       conf.int = TRUE,
+                                       conf.level = 0.95)))
 ```
 
 ```{r}
-data$ENSG00000068985
+# Unpack the models and adjust p-values for multiple comparisons
+# significant gene epxpression difference when adjuste p-value > 0.05
+model_estimates <- long_data_nested |> 
+  unnest(model_object_tidy) |> 
+  ungroup() |> 
+  filter(term == 'Tissue_type') |> 
+  select(c('gene','p.value','estimate','conf.low','conf.high')) |> 
+  mutate('q.value' = p.adjust(p.value)) |> 
+  mutate('is_significant' = case_when(q.value > 0.05 ~ 'no',
+                                      .default = 'yes') ) |> 
+  mutate('sign_gene_name' = case_when(is_significant == 'yes' ~ gene,
+                                      .default = '')) |> 
+  #filter(is_significant == 'yes') |> 
+  arrange(estimate) |> 
+  mutate(gene = factor(gene, levels = gene))
+```
+
+```{r}
+model_estimates %>% 
+  filter(is_significant == 'yes') %>% 
+  dim()
 ```
