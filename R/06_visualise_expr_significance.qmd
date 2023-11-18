@@ -1,0 +1,47 @@
+---
+title: "05_expression_significance"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(broom)
+```
+
+```{r}
+# load data
+data <- read_tsv('../data/gene_model_estimates.tsv')
+```
+
+```{r}
+# lists of meta data columns and gene columns
+
+meta_cols <- c('Sample',
+               'Tissue_type',
+               'Gender',
+               'Race',
+               'Smoker',
+               'Age',
+               'BMI')
+
+gene_cols <- data |> 
+  select(-one_of(meta_cols)) |> 
+  colnames()  
+```
+
+```{r}
+ggplot(data = data |> 
+         filter(is_significant == 'yes', )) +
+  aes(x = estimate,
+      y = gene,
+      order = gene) +
+  geom_point()+
+  geom_errorbarh(aes(xmin=conf.low, xmax=conf.high)) +
+  geom_vline(xintercept = 0) +
+  xlab('Estimates (95%CIs)') +
+  ylab('') +
+  ggtitle('Genes Associated with Lesions') +
+  labs(caption = '..')+
+  theme_minimal()
+```

@@ -76,3 +76,8 @@ model_estimates %>%
   filter(is_significant == 'yes') %>% 
   dim()
 ```
+
+```{r}
+# save model estimates in a new file
+write_tsv(model_estimates, file = '../data/gene_model_estimates.tsv')
+```
