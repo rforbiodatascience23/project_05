@@ -9,6 +9,10 @@ editor: visual
 The dataset at full contains 58.046 genes with their expression values for each of the 40 observations. To filter out the uninformative genes to the lesion/paralesion groups, a Student's t-Test could be performed on the scaled expressions. Genes with significant expression differences (p\<0.05) could be kept for further analysis.
 
 ```{r}
+library(tidyverse)
+```
+
+```{r}
 # load data
 data <- read_tsv('../data/augmented_meta_gene_table.tsv')
 ```
