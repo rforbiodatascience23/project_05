@@ -11,7 +11,8 @@ library(broom)
 
 ```{r}
 # load data
-data <- read_tsv('../data/gene_model_estimates.tsv')
+significans_data <- read_tsv('../../data/gene_model_estimates.tsv')
+expression_data = read_tsv("../../data/cleaned_meta_gene_table.tsv")
 ```
 
 ```{r}
@@ -31,7 +32,7 @@ gene_cols <- data |>
 ```
 
 ```{r}
-ggplot(data = data |> 
+ggplot(data = significans_data |> 
          filter(is_significant == 'yes', )) +
   aes(x = estimate,
       y = gene,
@@ -44,4 +45,72 @@ ggplot(data = data |>
   ggtitle('Genes Associated with Lesions') +
   labs(caption = '..')+
   theme_minimal()
+```
+
+```{r}
+# Gene name of the top 20 gene with highest adj. p-val
+most_significant <- 
+  significans_data |>
+  arrange(q.value) |>
+  slice(1:20) |> 
+  # Extract gene column as a vector
+  pull(gene)
+
+```
+
+```{r fig.width=10, fig.height=5}
+ 
+most_significant_genes <- 
+  expression_data |> 
+  select(meta_cols, most_significant) |>
+  mutate(across(significant_genes, log2)) |> 
+  pivot_longer(all_of(most_significant),
+               names_to = 'gene',
+               values_to = 'log2_expr') 
+
+midval <- 
+  most_significant_genes |> 
+  summarize(median = median(log2_expr)) |> 
+  pull(median)
+
+
+most_significant_genes |>  
+  ggplot(aes(x = Tissue_type, y = gene, fill = log2_expr)) + 
+  geom_tile() +
+  scale_fill_gradient2(low = 'blue', 
+                       high = 'red', 
+                       mid = 'white',
+                       midpoint = midval) +
+  labs(fill = 'log2 expression') + 
+  theme_minimal() +
+  theme(
+    panel.grid.major = element_blank(), # Remove major grid lines
+    panel.grid.minor = element_blank(), # Remove minor grid lines
+    axis.title.x = element_blank(), # Remove x-lable
+    axis.title.y = element_blank(), # Remove y-lable
+    axis.text.x = element_text(size = 15), # Adjust X-axis text size
+    axis.text.y = element_text(size = 12), # Adjust Y-axis text size
+    legend.title = element_text(size = 15), # Adjust color bar title size
+    legend.text = element_text(size = 12)  # Adjust color bar text size
+  ) +
+  # Increase colorbar size
+  guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
+```
+
+```{r}
+expr_diff <- 
+  expression_data |>
+  mutate(Sample = str_replace_all(Sample,'L',''), 
+         Sample = str_replace_all(Sample,'N','')) |> 
+  arrange(as.numeric(Sample)) |> 
+  pivot_longer(all_of(significant_genes),
+               names_to = 'gene',
+               values_to = 'expr') |> 
+  group_by(gene, Sample, Tissue_type) |>
+  select(gene, Sample, Tissue_type, expr) |> 
+  pivot_wider(names_from = Tissue_type, values_from = expr) |> 
+  mutate(expr_diff = Lesion / Perilesion) |> 
+  ungroup()
+
+expr_diff
 ```
