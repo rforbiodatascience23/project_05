@@ -11,15 +11,14 @@ library(broom)
 
 ```{r}
 # load data
-significans_data <- read_tsv('../../data/gene_model_estimates.tsv')
-expression_data = read_tsv("../../data/cleaned_meta_gene_table.tsv")
+data <- read_tsv('../../data/augmented_meta_gene_table.tsv')
+significans_data <- ('../../data/gene_model_estimates.tsv')
 ```
 
 ```{r}
 # lists of meta data columns and gene columns
 
 meta_cols <- c('Sample',
-               'Tissue_type',
                'Gender',
                'Race',
                'Smoker',
@@ -48,42 +47,60 @@ ggplot(data = significans_data |>
 ```
 
 ```{r}
-# Gene name of the top 20 gene with highest adj. p-val
-most_significant <- 
-  significans_data |>
-  arrange(q.value) |>
-  slice(1:20) |> 
-  # Extract gene column as a vector
-  pull(gene)
 
+expr_diff_ranked_data <- 
+  data |> 
+  pivot_longer(c(log2_Lesion, log2_Perilesion), 
+              names_to = 'Tissue_type',
+              values_to = 'log2_expression') |> 
+  mutate(Tissue_type = 
+           if_else(Tissue_type == 'log2_Lesion', 
+                               'Lesion', 
+                               'Perilesion')) |> 
+  select(all_of(meta_cols), 
+         Tissue_type, 
+         gene,
+         log2_expression, 
+         log2_expr_change) |>
+  group_by(gene) |> 
+  arrange(desc(log2_expr_change)) |> 
+  # Not sure if i should take the mean 
+  ungroup() |> 
+  group_by(gene, Tissue_type) |> 
+  summarise(mean_log2_expr_change = mean(log2_expr_change),
+            mean_log2_expr = mean(log2_expression)) |> 
+  ungroup() |> 
+  # Sort by mean_log2_expr_change in descending order and get top 20
+  arrange(desc(mean_log2_expr_change)) 
 ```
 
 ```{r fig.width=10, fig.height=5}
- 
-most_significant_genes <- 
-  expression_data |> 
-  select(meta_cols, most_significant) |>
-  mutate(across(significant_genes, log2)) |> 
-  pivot_longer(all_of(most_significant),
-               names_to = 'gene',
-               values_to = 'log2_expr') 
+most_upreg <- 
+  expr_diff_ranked_data |> 
+  slice_head(n = 40)
 
 midval <- 
-  most_significant_genes |> 
-  summarize(median = median(log2_expr)) |> 
+  expr_diff_ranked_data |> 
+  summarize(median = 
+              median(mean_log2_expr)) |> 
   pull(median)
-
-
-most_significant_genes |>  
-  ggplot(aes(x = Tissue_type, y = gene, fill = log2_expr)) + 
+                      
+most_upreg |>  
+  ggplot(aes(x = Tissue_type, y = gene, fill = mean_log2_expr)) + 
   geom_tile() +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
                        mid = 'white',
                        midpoint = midval) +
-  labs(fill = 'log2 expression') + 
+  labs(
+    title = 'Top 20 most upregulated genes',
+    fill = 'log2 expression') + 
   theme_minimal() +
   theme(
+    plot.title = element_text(size = 20,
+                              hjust = 0.5,
+                              vjust = 2,
+                              face = 'bold'),
     panel.grid.major = element_blank(), # Remove major grid lines
     panel.grid.minor = element_blank(), # Remove minor grid lines
     axis.title.x = element_blank(), # Remove x-lable
@@ -97,20 +114,36 @@ most_significant_genes |>
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
 ```
 
-```{r}
-expr_diff <- 
-  expression_data |>
-  mutate(Sample = str_replace_all(Sample,'L',''), 
-         Sample = str_replace_all(Sample,'N','')) |> 
-  arrange(as.numeric(Sample)) |> 
-  pivot_longer(all_of(significant_genes),
-               names_to = 'gene',
-               values_to = 'expr') |> 
-  group_by(gene, Sample, Tissue_type) |>
-  select(gene, Sample, Tissue_type, expr) |> 
-  pivot_wider(names_from = Tissue_type, values_from = expr) |> 
-  mutate(expr_diff = Lesion / Perilesion) |> 
-  ungroup()
-
-expr_diff
+```{r fig.width=10, fig.height=5}
+most_downreg <- 
+  expr_diff_ranked_data |> 
+  slice_tail(n = 40)
+                      
+most_downreg |>  
+  ggplot(aes(x = Tissue_type, y = gene, fill = mean_log2_expr)) + 
+  geom_tile() +
+  scale_fill_gradient2(low = 'blue', 
+                       high = 'red', 
+                       mid = 'white',
+                       midpoint = midval) +
+  labs(
+    title = 'Top 20 most downregulated genes',
+    fill = 'log2 expression') + 
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 20,
+                              hjust = 0.5,
+                              vjust = 2,
+                              face = 'bold'),
+    panel.grid.major = element_blank(), # Remove major grid lines
+    panel.grid.minor = element_blank(), # Remove minor grid lines
+    axis.title.x = element_blank(), # Remove x-lable
+    axis.title.y = element_blank(), # Remove y-lable
+    axis.text.x = element_text(size = 15), # Adjust X-axis text size
+    axis.text.y = element_text(size = 12), # Adjust Y-axis text size
+    legend.title = element_text(size = 15), # Adjust color bar title size
+    legend.text = element_text(size = 12)  # Adjust color bar text size
+  ) +
+  # Increase colorbar size
+  guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
 ```
