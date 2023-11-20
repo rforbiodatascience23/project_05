@@ -177,6 +177,6 @@ sig_data <-
 
 ```{r}
 # We save the cleaned data frame
-write_tsv(sig_genes, 
+write_tsv(sig_data, 
           file = "../../data/cleaned_meta_gene_table.tsv")
 ```

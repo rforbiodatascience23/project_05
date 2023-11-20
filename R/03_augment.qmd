@@ -5,22 +5,22 @@ editor: visual
 ---
 
 ```{r}
-# output: FALSE
+# Output: FALSE
 library(tidyverse)
+library(broom)
 ```
 
 ```{r}
-# output: FALSE
+# Output: FALSE
 # Loading the clean dataset
-data = read_tsv("../data/cleaned_meta_gene_table.tsv")
+data = read_tsv("../../data/cleaned_meta_gene_table.tsv")
 ```
 
-## Standardise gene expression values
+## Standardize gene expression values
 
 ```{r}
 # lists of meta data columns and gene columns
 meta_cols <- c('Sample',
-               'Tissue_type',
                'Gender',
                'Race',
                'Smoker',
@@ -34,16 +34,34 @@ gene_cols <- data |>
 
 ```{r}
 # group expression by genes and scale to 0 mean and 1 st. dev.
-scaled_data <- data |>
-  pivot_longer(all_of(gene_cols)) |> 
-  group_by(name) |> 
-  mutate(value = (value - mean(value))/sd(value)) |> 
-  ungroup() |> 
-  pivot_wider(names_from = name, values_from = value) |> 
-  unnest(everything())
+
+aug_data <- data |>
+  mutate(std_Lesion = 
+           (Lesion - mean(Lesion))/sd(Lesion)) |> 
+  mutate(std_Perilesion = 
+           (Perilesion - mean(Perilesion)/sd(Perilesion))) |> 
+  mutate(log2_Lesion = 
+           if_else(Lesion == 0, 
+                   0, 
+                   log2(Lesion)
+                   )
+         ) |> 
+   mutate(log2_Perilesion = 
+           if_else(Perilesion == 0, 
+                   0, 
+                   log2(Perilesion)
+                   )
+         ) |> 
+   mutate(log2_expr_change = 
+           if_else(expr_diff == 0, 
+                   0, 
+                   log2(expr_diff)
+                   )
+         ) 
 ```
 
 ```{r}
 # We save the augmented data frame
-write_tsv(scaled_data, file = "../data/augmented_meta_gene_table.tsv")
+write_tsv(aug_data, 
+          file = "../../data/augmented_meta_gene_table.tsv")
 ```
