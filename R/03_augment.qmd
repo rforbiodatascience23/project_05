@@ -63,5 +63,5 @@ aug_data <- data |>
 ```{r}
 # We save the augmented data frame
 write_tsv(aug_data, 
-          file = "../../data/augmented_meta_gene_table.tsv")
+          file = "../data/augmented_meta_gene_table.tsv")
 ```
