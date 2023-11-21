@@ -12,7 +12,7 @@ library(broom)
 ```
 
 ```{r}
-expression_data <- read_tsv('../../data/augmented_meta_gene_table.tsv')
+expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv')
 ```
 
 ```{r}
