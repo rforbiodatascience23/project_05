@@ -6,7 +6,7 @@ bibliography: references.bib
 ---
 
 ```{r}
-library(ggplot2)
+library(tidyverse)
 ```
 
 ## Lets compile general data description here
@@ -26,42 +26,56 @@ meta_cols <- c('Sample',
                'Age',
                'BMI')
 
-gene_cols <- data |> 
-  select(-one_of(meta_cols)) |> 
-  colnames()
 ```
 
 ```{r}
 
 # Data description like number of genes, number of patients etc.
 data |> 
-  select(all_of(gene_cols)) |>
-  ncol()
+  select(gene) |> 
+  unique() |> 
+  nrow()
 ```
 
-There are 51953 genes we are looking at across the lesional and perilesional tissue samples.
+There are 304 genes we are looking at across the lesional and perilesional tissue samples.
 
 ```{r}
-data |>
-  group_by(Gender) |>
-  count()
+wide_data <- 
+  data |>
+  select(all_of(meta_cols),
+         gene,
+         Lesion,
+         Perilesion) |> 
+  pivot_longer(c(Lesion, Perilesion),
+               names_to = 'Tissue_type',
+               values_to = 'expression') |> 
+  pivot_wider(names_from = gene, 
+              values_from = expression)
+
+wide_data |> 
+  filter(Tissue_type == 'Perilesion') |> 
+  group_by(Gender) |> 
+  count() |> 
+  ungroup()
 ```
 
 Out of the 20 patients selected for this study, 17 were females and 3 were males.
 
 ```{r}
-data |> 
+wide_data |> 
   group_by(Tissue_type) |>
-  count()
+  count() |> 
+  ungroup()
 ```
 
 20 lesional and perilesional samples each were collected from the patients, i.e, a pair of lesional and perilesional samples from each patient.
 
 ```{r}
 # Change to this one
-data |>
+wide_data |>
   group_by(Smoker, Gender) |>
-  summarize(n = n())
+  summarize(n = n()) |> 
+  ungroup()
 ```
 
 6 patients were ex-smokers, 9 were non-smokers and 5 were smokers.
@@ -71,15 +85,8 @@ data |>
 1 male patient was an ex-smoker, and 2 were smokers. So no male patient was a non-smoker.
 
 ```{r}
-attribute_dist_table <- data |> 
+attribute_dist_table <- wide_data |> 
   select(Sample, Age, Gender, BMI, Smoker, Race)
-
-attribute_dist_table
-```
-
-```{r}
-attribute_dist_table <- attribute_dist_table |> 
-  mutate(Sample = gsub("L", "", Sample))
 
 attribute_dist_table
 ```
@@ -100,7 +107,10 @@ The age distribution of the patients is shown above.
 ```{r}
 attribute_dist_table |> 
   ggplot(aes(x = Age)) +
-  geom_histogram(fill = "salmon", color = "black", alpha = 0.5, bins = 10) +
+  geom_histogram(fill = "salmon", 
+                 color = "black", 
+                 alpha = 0.5, 
+                 bins = 10) +
   facet_wrap(~Smoker) +
   theme_minimal() +
   theme(panel.grid = element_blank())
@@ -125,3 +135,4 @@ attribute_dist_table |>
   theme_minimal() +
   theme(panel.grid = element_blank())
 ```
+
