@@ -92,28 +92,86 @@ attribute_dist_table
 ```
 
 ```{r}
-attribute_dist_table |> 
-  ggplot(aes(x = Age)) +
-  geom_histogram(fill = "salmon", 
-                 color = "black", 
-                 alpha = 0.5, bins = 10) +
+# Creating agegroup
+
+attribute_dist_table <- 
+  attribute_dist_table |>  
+  mutate(Age_group = case_when(
+    Age >= 15 & Age <= 20 ~ '[15:20]',
+    Age > 20 & Age <= 30 ~ '(20:30]',
+    Age > 30 & Age <= 40 ~ '(30:40]',
+    Age > 40 & Age <= 50 ~ '(40:50]',
+    Age > 50 & Age <= 60 ~ '(50:60]'
+  )) 
+```
+
+```{r}
+# Write out catagories
+attribute_dist_table <- 
+  attribute_dist_table |> 
+  mutate(Gender = if_else(Gender == 'F',
+                          'Female',
+                          'Male')
+         ) |>
+  mutate(Smoker = case_when(Smoker == 'E'~'Ex-smoker',
+                            Smoker == 'Y'~'Yes',
+                            Smoker == 'N'~'No')
+         )
+```
+
+```{r}
+attribute_dist_table |>
+  ggplot(aes(x = Age_group,
+             fill = Gender
+             )
+         ) +
+  geom_bar(color = "black", 
+           alpha = 0.5) +
+  geom_hline(yintercept = 0,
+             color = 'black',
+             size = 0.5) +
   facet_wrap(~Gender) +
+  labs(title = 'Age Distribution by Gender',
+       x = 'Age group',
+       y = 'n') +
   theme_minimal() +
-  theme(panel.grid = element_blank())
+  theme(panel.grid = element_blank(),
+        plot.title = element_text(hjust = 0.5,
+                                  vjust = 2,
+                                  face = 'bold'),
+        strip.text = element_text(size = 11), # Adjust facet title size
+        ) +
+  guides(fill = "none") # Remove legend
+
 ```
 
 The age distribution of the patients is shown above.
 
 ```{r}
-attribute_dist_table |> 
-  ggplot(aes(x = Age)) +
-  geom_histogram(fill = "salmon", 
-                 color = "black", 
-                 alpha = 0.5, 
-                 bins = 10) +
+attribute_dist_table |>
+  ggplot(aes(x = Age_group,
+             fill = Gender
+             )
+         ) +
+  geom_bar(color = "black", 
+           alpha = 0.5) +
+  geom_hline(yintercept = 0,
+             color = 'black',
+             size = 0.5) +
   facet_wrap(~Smoker) +
+  labs(title = 'Age Distribution by Smoking history and Gender',
+       x = 'Age group',
+       y = 'n') +
   theme_minimal() +
-  theme(panel.grid = element_blank())
+  theme(panel.grid = element_blank(),
+        plot.title = element_text(hjust = 0.5,
+                                  vjust = 2,
+                                  face = 'bold'),
+        strip.text = element_text(size = 11),
+        axis.text.x = element_text(angle = 45,
+                                   hjust = 1,
+                                   vjust = 1.5)
+        )
 ```
 
 ```{r}
@@ -135,4 +193,3 @@ attribute_dist_table |>
   theme_minimal() +
   theme(panel.grid = element_blank())
 ```
-
