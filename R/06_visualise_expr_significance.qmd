@@ -12,7 +12,7 @@ library(broom)
 ```{r}
 # load data
 data <- read_tsv('../data/augmented_meta_gene_table.tsv')
-significans_data <- ('../data/gene_model_estimates.tsv')
+significans_data <- read_tsv('../data/gene_model_estimates.tsv')
 ```
 
 ```{r}
