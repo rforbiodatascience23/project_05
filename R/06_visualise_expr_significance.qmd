@@ -1,5 +1,5 @@
 ---
-title: "05_expression_significance"
+title: "06_expression_significance"
 format: html
 editor: visual
 ---
@@ -11,7 +11,7 @@ library(broom)
 
 ```{r}
 # load data
-data <- read_tsv('../data/augmented_meta_gene_table.tsv')
+expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv')
 significans_data <- read_tsv('../data/gene_model_estimates.tsv')
 ```
 
@@ -25,14 +25,16 @@ meta_cols <- c('Sample',
                'Age',
                'BMI')
 
+
 gene_cols <- data |> 
-  select(-one_of(meta_cols)) |> 
+  dplyr::select(-one_of(meta_cols)) |> 
   colnames()  
 ```
 
 ```{r}
 
-expr_diff_ranked_data <- data |> 
+expr_diff_ranked_data <- expression_data |> 
+  # Recreate tissue_type variable
   pivot_longer(c(log2_Lesion, log2_Perilesion), 
               names_to = 'Tissue_type',
               values_to = 'log2_expression') |> 
@@ -40,11 +42,11 @@ expr_diff_ranked_data <- data |>
            if_else(Tissue_type == 'log2_Lesion', 
                                'Lesion', 
                                'Perilesion')) |> 
-  select(all_of(meta_cols), 
-         Tissue_type, 
-         gene,
-         log2_expression, 
-         log2_expr_change) |>
+  
+  # Arrange the data by decreasing log2_expr_change
+  dplyr::select(-c(Lesion,
+                   Perilesion,
+                   expr_diff)) |>
   group_by(gene) |> 
   arrange(desc(log2_expr_change)) |> 
   # Not sure if i should take the mean 
@@ -54,16 +56,50 @@ expr_diff_ranked_data <- data |>
             mean_log2_expr = mean(log2_expression)) |> 
   ungroup() |> 
   # Sort by mean_log2_expr_change in descending order and get top 20
-  arrange(desc(mean_log2_expr_change)) 
+  arrange(desc(mean_log2_expr_change)) |> 
+  as.data.frame()
 ```
 
 ```{r}
-significans_data |>
+# Collect information about the genes
+gene_info <- 
+  expression_data |> 
+  dplyr::select(gene,
+                SYMBOL,
+                GENENAME,
+                CHR) |> 
+   distinct(gene, .keep_all = TRUE) |> 
+  as.data.frame()
+
+gene_info
+```
+
+```{r}
+# Merge information
+merged_expr_gene_data <- 
+  expr_diff_ranked_data |> 
+  merge(gene_info, 
+        by.x = "gene", 
+        by.y = "gene")
+```
+
+## Plot estimate and confident interval found from lm
+
+```{r fig.height = 8}
+
+merged_sig_data <-
+  significans_data |> 
+  merge(gene_info, 
+        by.x = 'gene',
+        by.y = 'gene')
+
+
+merged_sig_data |>
   filter(is_significant == 'yes') |>
   arrange(desc(estimate)) |>
-  slice(c(1:20, (n()-20):n())) |>
+  dplyr::slice(c(1:20, (n()-20):n())) |>
   ggplot(aes(x = estimate,
-      y = fct_reorder(gene,
+      y = fct_reorder(SYMBOL,
       estimate))) +
   geom_point() +
   geom_errorbarh(aes(xmin=conf.low, xmax=conf.high)) +
@@ -72,12 +108,32 @@ significans_data |>
   ylab('') +
   ggtitle('Genes Associated with Lesions') +
   labs(caption = '..') +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  face = 'bold'))
 ```
 
-```{r fig.width=10, fig.height=5}
+```{r}
+midval2 <- 
+  most_upreg |> 
+  summarize(median = 
+              median(mean_log2_expr_change)) |> 
+  pull(median)
+
+most_upreg |> 
+  ggplot(aes(x = 1, y = fct_inorder(SYMBOL), fill = mean_log2_expr_change)) +
+  geom_tile() +  # This creates the tiles for the heatmap
+  geom_text(aes(label = mean_log_2_expr_change), color = "black", size = 3) +  # Adds the text labels on top of the tiles
+  scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white', midpoint = midval2) +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),  # Hide x-axis text
+        axis.ticks.x = element_blank(),  # Hide x-axis ticks
+        axis.title.x = element_blank())  # Hide x-axis title
+```
+
+```{r fig.width=5, fig.height=5}
 most_upreg <- 
-  expr_diff_ranked_data |> 
+  merged_expr_gene_data |> 
   slice_head(n = 40)
 
 midval <- 
@@ -87,7 +143,7 @@ midval <-
   pull(median)
                       
 most_upreg |>  
-  ggplot(aes(x = Tissue_type, y = gene, fill = mean_log2_expr)) + 
+  ggplot(aes(x = Tissue_type, y = SYMBOL, fill = mean_log2_expr)) + 
   geom_tile() +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
@@ -98,7 +154,7 @@ most_upreg |>
     fill = 'log2 expression') + 
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 20,
+    plot.title = element_text(size = 15,
                               hjust = 0.5,
                               vjust = 2,
                               face = 'bold'),
@@ -106,33 +162,33 @@ most_upreg |>
     panel.grid.minor = element_blank(), # Remove minor grid lines
     axis.title.x = element_blank(), # Remove x-lable
     axis.title.y = element_blank(), # Remove y-lable
-    axis.text.x = element_text(size = 15), # Adjust X-axis text size
-    axis.text.y = element_text(size = 12), # Adjust Y-axis text size
-    legend.title = element_text(size = 15), # Adjust color bar title size
-    legend.text = element_text(size = 12)  # Adjust color bar text size
+    axis.text.x = element_text(size = 10), # Adjust X-axis text size
+    axis.text.y = element_text(size = 10), # Adjust Y-axis text size
+    legend.title = element_text(size = 12), # Adjust color bar title size
+    legend.text = element_text(size = 10)  # Adjust color bar text size
   ) +
   # Increase colorbar size
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
 ```
 
-```{r fig.width=10, fig.height=5}
+```{r fig.width=5, fig.height=5}
 most_downreg <- 
-  expr_diff_ranked_data |> 
+  merged_expr_gene_data |> 
   slice_tail(n = 40)
                       
 most_downreg |>  
-  ggplot(aes(x = Tissue_type, y = gene, fill = mean_log2_expr)) + 
+  ggplot(aes(x = Tissue_type, y = SYMBOL, fill = mean_log2_expr)) + 
   geom_tile() +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
                        mid = 'white',
                        midpoint = midval) +
   labs(
-    title = 'Top 20 most downregulated genes',
+    title = 'Top 20 most upregulated genes',
     fill = 'log2 expression') + 
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 20,
+    plot.title = element_text(size = 15,
                               hjust = 0.5,
                               vjust = 2,
                               face = 'bold'),
@@ -140,10 +196,10 @@ most_downreg |>
     panel.grid.minor = element_blank(), # Remove minor grid lines
     axis.title.x = element_blank(), # Remove x-lable
     axis.title.y = element_blank(), # Remove y-lable
-    axis.text.x = element_text(size = 15), # Adjust X-axis text size
-    axis.text.y = element_text(size = 12), # Adjust Y-axis text size
-    legend.title = element_text(size = 15), # Adjust color bar title size
-    legend.text = element_text(size = 12)  # Adjust color bar text size
+    axis.text.x = element_text(size = 10), # Adjust X-axis text size
+    axis.text.y = element_text(size = 10), # Adjust Y-axis text size
+    legend.title = element_text(size = 12), # Adjust color bar title size
+    legend.text = element_text(size = 10)  # Adjust color bar text size
   ) +
   # Increase colorbar size
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 

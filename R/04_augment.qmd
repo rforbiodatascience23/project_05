@@ -1,0 +1,49 @@
+---
+title: "04_augment"
+format: html
+editor: visual
+---
+
+```{r}
+# Output: FALSE
+library(tidyverse)
+library(broom)
+```
+
+```{r}
+# Output: FALSE
+# Loading the clean dataset
+data = read_tsv("../data/annotated_meta_gene_table.tsv")
+```
+
+## log2_transformation of data
+
+```{r}
+
+aug_data <- data |>
+   mutate(log2_Lesion = 
+           if_else(Lesion == 0, 
+                   0, 
+                   log2(Lesion)
+                   )
+         ) |> 
+   mutate(log2_Perilesion = 
+           if_else(Perilesion == 0, 
+                   0, 
+                   log2(Perilesion)
+                   )
+         ) |> 
+   mutate(log2_expr_change = 
+           if_else(expr_diff == 0, 
+                   0, 
+                   log2(expr_diff)
+                   )
+         ) 
+
+```
+
+```{r}
+# We save the augmented data frame
+write_tsv(aug_data, 
+          file = "../data/augmented_meta_gene_table.tsv")
+```

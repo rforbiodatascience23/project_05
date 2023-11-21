@@ -1,0 +1,49 @@
+---
+title: "03_annotation"
+format: html
+editor: visual
+---
+
+```{r}
+# output: FALSE
+library(tidyverse)
+library(clusterProfiler)
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+```
+
+```{r}
+expression_data <- read_tsv( "../data/cleaned_meta_gene_table.tsv")
+```
+
+## Annotation of genes
+
+```{r}
+ensembl_ID <- 
+  expression_data |> 
+  dplyr::select(gene) |> 
+  unique() |> 
+  pull(gene)
+
+
+# Find the corresponding SYMBOL for all ENSEMBL in org.HS.eg.db 
+mapping <- AnnotationDbi::select(org.Hs.eg.db, 
+                                 keys = keys(org.Hs.eg.db, keytype = "ENSEMBL"),
+                                 keytype = "ENSEMBL",
+                                 columns = c("SYMBOL",
+                                       "GENENAME",
+                                       "CHR"
+                                       )
+                           ) |> 
+                  as.data.frame()
+
+
+annotated_data <- 
+  expression_data |> 
+  merge(mapping, by.x = 'gene', by.y = 'ENSEMBL')
+
+```
+
+```{r}
+write_tsv(annotated_data, '../data/annotated_meta_gene_table.tsv')
+```
