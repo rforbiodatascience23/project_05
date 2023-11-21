@@ -11,7 +11,7 @@ library(tidyverse)
 
 ```{r}
 # Loading the created dataset
-meta_gene_table = read_tsv("../../data/meta_gene_table.tsv")
+meta_gene_table = read_tsv("../data/meta_gene_table.tsv")
 ```
 
 ```{r}
