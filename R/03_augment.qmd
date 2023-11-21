@@ -13,7 +13,7 @@ library(broom)
 ```{r}
 # Output: FALSE
 # Loading the clean dataset
-data = read_tsv("../../data/cleaned_meta_gene_table.tsv")
+data = read_tsv("../data/cleaned_meta_gene_table.tsv")
 ```
 
 ## Standardize gene expression values
