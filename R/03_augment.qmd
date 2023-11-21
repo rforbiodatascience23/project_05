@@ -13,7 +13,7 @@ library(broom)
 ```{r}
 # Output: FALSE
 # Loading the clean dataset
-data = read_tsv("../../data/cleaned_meta_gene_table.tsv")
+data = read_tsv("../data/cleaned_meta_gene_table.tsv")
 ```
 
 ## Standardize gene expression values
@@ -36,16 +36,18 @@ gene_cols <- data |>
 # group expression by genes and scale to 0 mean and 1 st. dev.
 
 aug_data <- data |>
+  group_by(gene) |> 
   mutate(std_Lesion = 
            (Lesion - mean(Lesion))/sd(Lesion)) |> 
   mutate(std_Perilesion = 
-           (Perilesion - mean(Perilesion)/sd(Perilesion))) |> 
+           (Perilesion - mean(Perilesion))/sd(Perilesion)) |> 
   mutate(log2_Lesion = 
            if_else(Lesion == 0, 
                    0, 
                    log2(Lesion)
                    )
          ) |> 
+   ungroup() |> 
    mutate(log2_Perilesion = 
            if_else(Perilesion == 0, 
                    0, 
@@ -58,10 +60,34 @@ aug_data <- data |>
                    log2(expr_diff)
                    )
          ) 
+
+# Test for standarization. Delete Later
+
+aug_data |> 
+  arrange(desc(Perilesion)) |> 
+  head(10) |> 
+  select(gene ,Lesion, Perilesion)
+
+top_lesion <- 
+  aug_data |> 
+  filter(Perilesion == 762761) |> 
+  pull(gene)
+
+aug_data |>
+  filter(gene == top_lesion) |> 
+  summarize(mean_p = mean(Perilesion), 
+            std_p = sd(Perilesion),
+            mean_l = mean(Lesion),
+            std_l = sd(Perilesion),
+            max_p = max(Perilesion),
+            max_l = max(Lesion)) 
+
+(762761-440032)/152882.1
+
 ```
 
 ```{r}
 # We save the augmented data frame
 write_tsv(aug_data, 
-          file = "../../data/augmented_meta_gene_table.tsv")
+          file = "../data/augmented_meta_gene_table.tsv")
 ```
