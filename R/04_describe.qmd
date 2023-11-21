@@ -20,7 +20,6 @@ Hidradenitis suppurativa (HS) is a severe, debilitating chronic inflammatory dis
 
 ```{r}
 meta_cols <- c('Sample',
-               'Tissue_type',
                'Gender',
                'Race',
                'Smoker',
