@@ -183,4 +183,6 @@ sig_data <- gene_expr_diff |>
 # We save the cleaned data frame
 write_tsv(sig_data, 
           file = "../data/cleaned_meta_gene_table.tsv")
+write_tsv(model_estimates, 
+          file = "../data/gene_model_estimates.tsv")
 ```
