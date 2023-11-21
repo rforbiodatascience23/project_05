@@ -1,0 +1,173 @@
+---
+title: "GO_analysis"
+format: html
+editor: visual
+---
+
+```{r}
+# ouput: FALSE
+library(tidyverse)
+library(clusterProfiler)
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+```
+
+```{r}
+# output: FALSE
+expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv')
+```
+
+## Gene Ontology analysis for genes with upregulated expression
+
+```{r}
+upregulated <- 
+  expression_data |> 
+  group_by(gene) |> 
+  filter(any(expr_diff >= 3)) |> 
+  pull(gene) 
+
+
+
+upreg_GO_res <- enrichGO(gene = upregulated,
+                   OrgDb = 'org.Hs.eg.db',
+                   keyType = 'ENSEMBL',
+                   # BP for biological processes
+                   ont = 'BP') |>  
+          as.data.frame()
+
+upreg_GO_res <- 
+  upreg_GO_res |> 
+   mutate(short_description = ifelse(str_length(Description) > 20,
+                                   paste0(str_sub(Description, 1, 20), "..."),
+                                   Description))
+          
+  
+```
+
+```{r fig.height=12, fig.width = 8}
+
+upreg_GO_res |> 
+  arrange(p.adjust) |> 
+  ggplot(aes(x = short_description, y = Count, fill = p.adjust)) +  
+  # stat = 'identity' tells y is the height of bars
+  # position = 'dodge' basicallty says that the x-axis is catagorical
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  scale_fill_gradient(low = "blue", 
+                      high = "red") +  
+  labs(
+    title = "Differential Expression Profile: Top Gene Ontology Terms",
+    x = "Gene Ontology Term Description", 
+    y = "Count",
+    fill = "Adjusted p-value"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5,
+                              face = 'bold'),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12),
+    panel.border = element_rect(colour = "black", fill = 'transparent',size = 0.5) 
+        ) +
+  coord_flip()  # Flip coordinates to make the bars horizontal
+
+
+```
+
+## Only for top 10 pathways
+
+```{r fig.height=10, fig.width = 6}
+
+
+upreg_GO_res <- 
+  upreg_GO_res |> 
+   mutate(short_description = ifelse(str_length(Description) > 40,
+                                   paste0(str_sub(Description, 1, 40), "..."),
+                                   Description)) |>    
+  mutate(short_description = str_wrap(short_description, 
+                                      width = 20)) 
+          
+
+
+upreg_GO_res |> 
+  arrange(p.adjust) |>
+  slice_head(n = 20) |> 
+  ggplot(aes(x = short_description, y = Count, fill = p.adjust)) +  
+  # stat = 'identity' tells y is the height of bars
+  # position = 'dodge' basicallty says that the x-axis is catagorical
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  scale_fill_gradient(low = "blue", 
+                      high = "red") +  
+  labs(
+    title = "Differential Expression Profile: Top 20 Gene Ontology Terms",
+    x = "Gene Ontology Term Description", 
+    y = "Count",
+    fill = "Adjusted p-value"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5,
+                              face = 'bold'),
+    axis.text.x = element_text(size = 11),
+    axis.text.y = element_text(size = 11),
+    panel.border = element_rect(colour = "black", fill = 'transparent',size = 0.5) 
+        ) +
+  coord_flip()  # Flip coordinates to make the bars horizontal
+```
+
+## Gene Ontology analysis for downregulated gene
+
+```{r}
+downregulated <- 
+  expression_data |> 
+  group_by(gene) |> 
+  filter(any(expr_diff <= 1/3)) |> 
+  pull(gene) 
+
+
+
+downreg_GO_res <- enrichGO(gene = downregulated,
+                   OrgDb = 'org.Hs.eg.db',
+                   keyType = 'ENSEMBL',
+                   # BP for biological processes
+                   ont = 'BP') |>  
+          as.data.frame()
+
+downreg_GO_res <- 
+  downreg_GO_res |> 
+   mutate(short_description = ifelse(str_length(Description) > 40,
+                                   paste0(str_sub(Description, 1, 40), "…"),
+                                   Description)) |> 
+  mutate(short_description = str_wrap(short_description, 20))
+          
+  
+```
+
+```{r fig.height=10, fig.width = 6}
+
+downreg_GO_res |> 
+  arrange(p.adjust) |>
+  ggplot(aes(x = short_description, y = Count, fill = p.adjust)) +  
+  # stat = 'identity' tells y is the height of bars
+  # position = 'dodge' basicallty says that the x-axis is catagorical
+  geom_bar(stat = "identity", 
+           position = "dodge") +
+  scale_fill_gradient(low = "blue", 
+                      high = "red") +  
+  labs(
+    title = "Differential Expression Profile: Top 20 Gene Ontology Terms",
+    x = "Gene Ontology Term Description", 
+    y = "Count",
+    fill = "Adjusted p-value"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5,
+                              face = 'bold'),
+    axis.text.x = element_text(size = 11),
+    axis.text.y = element_text(size = 11),
+    panel.border = element_rect(colour = "black", fill = 'transparent',size = 0.5) 
+        ) +
+  coord_flip()  # Flip coordinates to make the bars horizontal
+```
