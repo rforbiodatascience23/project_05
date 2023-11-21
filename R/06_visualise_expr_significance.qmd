@@ -31,25 +31,8 @@ gene_cols <- data |>
 ```
 
 ```{r}
-ggplot(data = significans_data |> 
-         filter(is_significant == 'yes', )) +
-  aes(x = estimate,
-      y = gene,
-      order = gene) +
-  geom_point()+
-  geom_errorbarh(aes(xmin=conf.low, xmax=conf.high)) +
-  geom_vline(xintercept = 0) +
-  xlab('Estimates (95%CIs)') +
-  ylab('') +
-  ggtitle('Genes Associated with Lesions') +
-  labs(caption = '..')+
-  theme_minimal()
-```
 
-```{r}
-
-expr_diff_ranked_data <- 
-  data |> 
+expr_diff_ranked_data <- data |> 
   pivot_longer(c(log2_Lesion, log2_Perilesion), 
               names_to = 'Tissue_type',
               values_to = 'log2_expression') |> 
@@ -72,6 +55,24 @@ expr_diff_ranked_data <-
   ungroup() |> 
   # Sort by mean_log2_expr_change in descending order and get top 20
   arrange(desc(mean_log2_expr_change)) 
+```
+
+```{r}
+significans_data |>
+  filter(is_significant == 'yes') |>
+  arrange(desc(estimate)) |>
+  slice(c(1:20, (n()-20):n())) |>
+  ggplot(aes(x = estimate,
+      y = fct_reorder(gene,
+      estimate))) +
+  geom_point() +
+  geom_errorbarh(aes(xmin=conf.low, xmax=conf.high)) +
+  geom_vline(xintercept = 0) +
+  xlab('Estimates (95%CIs)') +
+  ylab('') +
+  ggtitle('Genes Associated with Lesions') +
+  labs(caption = '..') +
+  theme_minimal()
 ```
 
 ```{r fig.width=10, fig.height=5}
