@@ -1,0 +1,44 @@
+---
+title: "Annotation"
+format: html
+editor: visual
+---
+
+Annotation using https://www.biostars.org/p/317962/
+
+```{r}
+# output: FALSE
+library(tidyverse)
+library(EDASeq)
+library(httr)
+```
+
+```{r}
+raw_data <- read_tsv('../../data/meta_gene_table.tsv')
+```
+
+```{r}
+raw_data
+```
+
+```{r}
+
+raw_data |>  head()
+
+raw_data <- 
+  raw_data |> 
+  select(-c(Patient_id,
+            Tissue)) |> 
+  pivot_longer(starts_with('ENSG'), 
+               names_to = 'gene',
+               values_to = 'expression') 
+
+gene_list <- 
+  raw_data |> 
+  pull(gene)
+
+options(httr.timeout = 1000)
+
+ ensembl_list <- c("ENSG00000000003","ENSG00000000419","ENSG00000000457","ENSG00000000460")
+getGeneLengthAndGCContent(ensembl_list, 'hsa')
+```
