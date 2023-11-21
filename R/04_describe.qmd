@@ -102,7 +102,15 @@ attribute_dist_table <-
     Age > 30 & Age <= 40 ~ '(30:40]',
     Age > 40 & Age <= 50 ~ '(40:50]',
     Age > 50 & Age <= 60 ~ '(50:60]'
-  )) 
+  )) |> 
+  mutate(Age_group = factor(
+    Age_group, 
+    levels = c('[15:20]', 
+               '(20:30]', 
+               '(30:40]', 
+               '(40:50]', 
+               '(50:60]')
+    ))
 ```
 
 ```{r}
@@ -117,6 +125,8 @@ attribute_dist_table <-
                             Smoker == 'Y'~'Yes',
                             Smoker == 'N'~'No')
          )
+
+attribute_dist_table
 ```
 
 ```{r}
@@ -175,21 +185,104 @@ attribute_dist_table |>
 ```
 
 ```{r}
-attribute_dist_table |> 
-  ggplot(aes(x = BMI)) +
-  geom_histogram(fill = "salmon", color = "black", alpha = 0.5, bins = 10) +
-  facet_wrap(~Smoker) +
+# Add BMI group
+attribute_dist_table <- attribute_dist_table |>  
+  mutate(BMI_group = case_when(BMI <= 25 ~ 'Below 25',
+                               (BMI > 25 & BMI <= 35) ~ 'Between 25 and 35',
+                               (BMI > 35 & BMI <= 45) ~ 'Between 35 and 45',
+                               BMI > 45 ~ 'Above 45')
+         ) |> 
+  mutate(BMI_group = factor(BMI_group, 
+                            levels = c('Below 25', 
+                                       'Between 25 and 35', 
+                                       'Between 35 and 45', 
+                                       'Above 45')
+                            ))
+
+```
+
+```{r}
+attribute_dist_table |>
+  ggplot(aes(x = BMI_group,
+             fill = Gender
+             )
+         ) +
+  geom_bar(color = "black", 
+           alpha = 0.5) +
+  geom_hline(yintercept = 0,
+             color = 'black',
+             size = 0.5) +
+  facet_wrap(~Gender) +
+  labs(title = 'BMI Distribution by Gender',
+       x = 'BMI group',
+       y = 'n') +
   theme_minimal() +
-  theme(panel.grid = element_blank())
+  theme(panel.grid = element_blank(),
+        plot.title = element_text(hjust = 0.5,
+                                  vjust = 2,
+                                  face = 'bold'),
+        strip.text = element_text(size = 11), # Adjust facet title size
+        axis.text.x = element_text(angle = 40,
+                                   hjust = 1,
+                                   vjust = 1.1)
+        ) +
+  guides(fill = "none") # Remove legend
+```
+
+```{r}
+attribute_dist_table |>
+  ggplot(aes(x = BMI_group,
+             fill = Gender
+             )
+         ) +
+  geom_bar(color = "black", 
+           alpha = 0.5) +
+  geom_hline(yintercept = 0,
+             color = 'black',
+             size = 0.5) +
+  facet_wrap(~Smoker) +
+  labs(title = 'BMI Distribution by Smoking history and Gender',
+       x = 'BMI group',
+       y = 'n') +
+  theme_minimal() +
+  theme(panel.grid = element_blank(),
+        plot.title = element_text(hjust = 0.5,
+                                  vjust = 2,
+                                  face = 'bold'),
+        strip.text = element_text(size = 11),
+        axis.text.x = element_text(angle = 40,
+                                   hjust = 1,
+                                   vjust = 1.1)
+        )
 ```
 
 The BMI distribution of the patients is shown above.
 
 ```{r}
-attribute_dist_table |> 
-  ggplot(aes(x = BMI)) +
-  geom_histogram(fill = "salmon", color = "black", alpha = 0.5, bins = 10) +
+{r}
+attribute_dist_table |>
+  ggplot(aes(x = BMI_group,
+             fill = Race
+             )
+         ) +
+  geom_bar(color = "black", 
+           alpha = 0.5) +
+  geom_hline(yintercept = 0,
+             color = 'black',
+             size = 0.5) +
   facet_wrap(~Race) +
+  labs(title = 'BMI Distribution by Smoking history and Gender',
+       x = 'BMI group',
+       y = 'n') +
   theme_minimal() +
-  theme(panel.grid = element_blank())
+  theme(panel.grid = element_blank(),
+        plot.title = element_text(hjust = 0.5,
+                                  vjust = 2,
+                                  face = 'bold'),
+        strip.text = element_text(size = 11),
+        axis.text.x = element_text(angle = 40,
+                                   hjust = 1,
+                                   vjust = 1.1)
+        ) +
+  guides(fill = 'none')
 ```
