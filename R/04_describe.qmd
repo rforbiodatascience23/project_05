@@ -13,7 +13,7 @@ library(ggplot2)
 
 ```{r}
 # load in augmented data for description
-data = read_tsv('../../data/augmented_meta_gene_table.tsv')
+data = read_tsv('../data/augmented_meta_gene_table.tsv')
 ```
 
 Hidradenitis suppurativa (HS) is a severe, debilitating chronic inflammatory disease affecting hair follicles with a predilection for intertriginous areas.[@freudenberg2023]. We looked at this study of 20 HS patients at the University of North Carolina Department of Dermatology clinics from October 2017 through February 2018. Whole skin punch biopsies were collected from a lesional site and a matching non-lesional site located 5 cm from the site of inflammation for all the patients[@freudenberg2023]. We want to look at the genes that are significantly differentially expressed between the lesional and perilesional sites; the idea is the genes that are significantly over/under-expressed in the lesional sites might be involved in molecular pathways that affect HS.
