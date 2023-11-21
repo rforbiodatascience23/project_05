@@ -1,0 +1,122 @@
+---
+title: "07_PCA"
+format: html
+editor: visual
+---
+
+```{r}
+# output: FALSE
+library(tidyverse)
+library(ggrepel)
+library(broom)
+```
+
+```{r}
+expression_data <- read_tsv('../../data/augmented_meta_gene_table.tsv')
+```
+
+```{r}
+meta_cols <- c('Sample',
+               'Gender',
+               'Race',
+               'Smoker',
+               'Age',
+               'BMI')
+
+
+pca_data <- 
+  expression_data |> 
+  select(all_of(meta_cols), 
+         gene,
+         log2_Lesion, 
+         log2_Perilesion) |> 
+  pivot_longer(c(log2_Lesion, log2_Perilesion),
+               names_to = 'Tissue_type',
+               values_to = 'log2_expr') |> 
+  mutate(Tissue_type = if_else(Tissue_type == 'log2_Lesion', 
+                               'Lesion', 
+                               'Perilesion')) |> 
+  pivot_wider(names_from = gene, values_from = log2_expr) |> 
+  mutate(Sample = 
+           if_else(Tissue_type == 'Lesion', 
+                   paste0(Sample, 'L'),
+                   paste0(Sample, 'P')
+                   )
+         )
+
+
+pca_fit <- 
+  pca_data |> 
+  select(starts_with('ENSG')) |> 
+# To standarize the data. I don't think it make the biggest difference. Also, i guess, it would 
+#  scale() |> 
+  prcomp()
+
+
+pca_fit |> 
+  augment(pca_data) |> 
+  ggplot(aes(.fittedPC1, 
+             .fittedPC2, 
+             color = Tissue_type,
+             label = Sample)) + 
+  geom_point(size = 1.5) +
+  labs(title = 'PCA of RNA-seq Data by Tissue Type',
+       x = 'PC1',
+       y = 'PC2',
+       color = 'Tissue type') +
+  # Adds sample labels
+  geom_text_repel(size = 2.5,
+                  min.segment.length = 0,
+                  segment.linetype = 4) + 
+  theme_minimal() +
+  theme(plot.title = 
+          element_text(hjust = 0.5,
+                       vjust = 2,
+                       face = 'bold'),
+        panel.grid.minor = element_blank()
+        ) 
+
+
+
+  
+```
+
+```{r}
+
+# Does make that much sense to look at, i suppose
+
+pca_data <- 
+  pca_data |> 
+  mutate(Smoker = case_when(Smoker == 'E' ~ 'Ex-smoker',
+                            Smoker == 'Y' ~ 'Yes',
+                            Smoker == 'N' ~ 'No'
+                            )
+         )
+
+
+pca_fit |> 
+  augment(pca_data) |> 
+  ggplot(aes(.fittedPC1, 
+             .fittedPC2, 
+             color = Smoker,
+             label = Sample)) + 
+  geom_point(size = 1.5) +
+  labs(title = 'PCA of RNA-seq Data by Smoking History',
+       x = 'PC1',
+       y = 'PC2',
+       color = 'Smoking history') +
+  # Adds sample labels
+  geom_text_repel(size = 2.5,
+                  min.segment.length = 0,
+                  segment.linetype = 4) + 
+  theme_minimal() +
+  theme(plot.title = 
+          element_text(hjust = 0.5,
+                       vjust = 2,
+                       face = 'bold'),
+        panel.grid.minor = element_blank()
+        )
+
+
+
+```
