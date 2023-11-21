@@ -43,7 +43,6 @@ There are 51953 genes we are looking at across the lesional and perilesional tis
 
 ```{r}
 data |>
-  filter(Tissue_type == 'Lesion') |> 
   group_by(Gender) |>
   count()
 ```
@@ -61,7 +60,6 @@ data |>
 ```{r}
 # Change to this one
 data |>
-  filter(Tissue_type == 'Lesion') |> 
   group_by(Smoker, Gender) |>
   summarize(n = n())
 ```
@@ -74,7 +72,6 @@ data |>
 
 ```{r}
 attribute_dist_table <- data |> 
-  filter(Tissue_type == 'Lesion') |> 
   select(Sample, Age, Gender, BMI, Smoker, Race)
 
 attribute_dist_table
