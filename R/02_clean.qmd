@@ -24,6 +24,7 @@ missing_values <- meta_gene_table |>
 ```{r}
 # Checking if some columns have missing values
 # Same result as above but super quick run time
+# Useless because you need to execute the cell above (not faster)
 missing_values_t <- missing_values |>
   t() |>
   as.data.frame()
