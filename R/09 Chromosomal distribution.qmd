@@ -1,0 +1,112 @@
+---
+title: "Chromosomal_distribution"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv')
+```
+
+```{r}
+# Rearrange data
+arranged_data <- 
+  expression_data |> 
+  select(-c(Lesion, Perilesion)) |> 
+  pivot_longer(c(log2_Lesion, log2_Perilesion),
+               names_to = 'Tissue_type',
+               values_to = 'log2expr') |> 
+  mutate(Tissue_type = if_else(Tissue_type == 'log2_Lesion',
+                               'Lesion',
+                               'Perilesion')) |> 
+  group_by(gene) |> 
+  mutate(mean_log2expr = mean(log2expr)) |> 
+  mutate(CHR = factor(CHR, levels = c(paste(1:22), "X", "Y")))
+  
+```
+
+## Count of up- and downregulated genes
+
+```{r}
+upreg_count <- 
+  arranged_data |>
+  group_by(gene) |> 
+  # Only look at the upregulated genes
+  filter(any(expr_diff >= 3)) |> 
+  select(gene) |> 
+  unique() |> 
+  nrow()
+
+downreg_count <- 
+  arranged_data |>
+  group_by(gene) |> 
+  # Only look at the upregulated genes
+  filter(any(expr_diff <= 1/3)) |> 
+  select(gene) |> 
+  unique() |> 
+  nrow()
+
+gene_counts <- 
+  data.frame('Number_of_upregulated_genes' = upreg_count,
+           'Number_of_downregulated_genes' = downreg_count)
+
+gene_counts
+```
+
+## Chromosome distribution of upregulated genes
+
+```{r}
+arranged_data |>
+  group_by(gene) |> 
+  # Only look at the upregulated genes
+  filter(any(expr_diff >= 3)) |> 
+  ungroup() |> 
+  # fct_rev is used to filp the CHR catagory
+  ggplot(aes(fct_rev(CHR), fill = CHR)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = 'Chromosomal distribution of upregulated genes',
+       x = 'Counts',
+       y = 'Chromosome') +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  vjust = 2,
+                                  face = 'bold'),
+        legend.position = "none",
+        panel.border = element_rect(colour = "black", 
+                                    fill = 'transparent',
+                                    size = 0.5),
+        axis.text = element_text(size = 10)
+        )
+```
+
+## Chromosomal distribution of downregulated gene
+
+```{r}
+arranged_data |>
+  group_by(gene) |> 
+  # Only look at the upregulated genes
+  filter(any(expr_diff <= 1/3)) |> 
+  ungroup() |> 
+  # fct_rev is used to filp the CHR catagory
+  ggplot(aes(fct_rev(CHR), fill = CHR)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal() +
+  labs(title = 'Chromosomal distribution of downregulated genes',
+       x = 'Counts',
+       y = 'Chromosome') +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  vjust = 2,
+                                  face = 'bold'),
+        legend.position = "none",
+        panel.border = element_rect(colour = "black", 
+                                    fill = 'transparent',
+                                    size = 0.5),
+        axis.text = element_text(size = 10)
+        )
+```
