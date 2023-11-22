@@ -1,5 +1,5 @@
 ---
-title: "03_augment"
+title: "04_augment"
 format: html
 editor: visual
 ---
@@ -13,41 +13,20 @@ library(broom)
 ```{r}
 # Output: FALSE
 # Loading the clean dataset
-data = read_tsv("../data/cleaned_meta_gene_table.tsv")
+data = read_tsv("../data/annotated_meta_gene_table.tsv")
 ```
 
-## Standardize gene expression values
+## log2_transformation of data
 
 ```{r}
-# lists of meta data columns and gene columns
-meta_cols <- c('Sample',
-               'Gender',
-               'Race',
-               'Smoker',
-               'Age',
-               'BMI')
-
-gene_cols <- data |> 
-  select(-one_of(meta_cols)) |> 
-  colnames()
-```
-
-```{r}
-# group expression by genes and scale to 0 mean and 1 st. dev.
 
 aug_data <- data |>
-  group_by(gene) |> 
-  mutate(std_Lesion = 
-           (Lesion - mean(Lesion))/sd(Lesion)) |> 
-  mutate(std_Perilesion = 
-           (Perilesion - mean(Perilesion))/sd(Perilesion)) |> 
-  mutate(log2_Lesion = 
+   mutate(log2_Lesion = 
            if_else(Lesion == 0, 
                    0, 
                    log2(Lesion)
                    )
          ) |> 
-   ungroup() |> 
    mutate(log2_Perilesion = 
            if_else(Perilesion == 0, 
                    0, 
@@ -60,7 +39,6 @@ aug_data <- data |>
                    log2(expr_diff)
                    )
          ) 
-
 
 ```
 
