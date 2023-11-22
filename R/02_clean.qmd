@@ -57,7 +57,7 @@ gene_cols <- meta_gene_table |>
   select(-one_of(meta_cols)) |> 
   colnames()
 
-# get genes names that have 0 expression
+# get genes names that have 0 expression (6098 genes are found to be 0 expressed)
 zero_expression_genes <- meta_gene_table |>
   pivot_longer(all_of(gene_cols)) |> 
   group_by(name) |> 
@@ -71,21 +71,19 @@ zero_expression_genes <- meta_gene_table |>
 ```{r}
 # select non 0 expression genes from the data
 meta_gene_table <- meta_gene_table |> 
-  select(-one_of(zero_expression_genes))
+  select(-all_of(zero_expression_genes))
 ```
 
 ```{r}
+# Creating a tibble with only the genes columns
 gene_cols <- meta_gene_table |> 
-  select(-one_of(meta_cols)) |> 
+  select(-all_of(meta_cols)) |> 
   colnames()
 ```
 
 ```{r}
 # Subset genes that are 3-fold up or downregulated
-gene_number_unfiltred <- meta_gene_table |>
-  filter(Sample == '1L') |> 
-  select(starts_with('ENSG')) |> 
-  ncol()
+gene_number_unfiltered <- length(gene_cols)
 
 gene_expr_diff <- meta_gene_table |>
   mutate(Sample = str_replace_all(Sample,'L',''), 
@@ -120,7 +118,7 @@ high_diff_lose <- gene_expr_diff |>
   pull(gene) 
 
 filtering_res <- data.frame(
-            unfiltered = gene_number_unfiltred, 
+            unfiltered = gene_number_unfiltered, 
             filtered_strict = length(high_diff_strict), 
             filtered_loss = length(high_diff_lose)
             )
