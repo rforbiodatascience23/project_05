@@ -69,7 +69,7 @@ zero_expression_genes <- meta_gene_table |>
 ```
 
 ```{r}
-# select non 0 expression genes from the data
+# select non 0 expression genes from the data (6098 genes are deleted)
 meta_gene_table <- meta_gene_table |> 
   select(-all_of(zero_expression_genes))
 ```
