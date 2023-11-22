@@ -1,0 +1,74 @@
+---
+title: "Chromosomal_distribution"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+raw_data <- read_tsv('../data/meta_gene_table.tsv ')
+```
+
+## Count for each sample
+
+**Missing make levels**
+
+```{r}
+gene_cols <- 
+  raw_data |> 
+  dplyr::select(starts_with('ENSG')) |> 
+  colnames()
+  
+
+Sample_count <- 
+  raw_data |> 
+  pivot_longer(gene_cols, 
+               names_to = 'Gene', 
+               values_to = 'Expression') |> 
+  group_by(Sample) |> 
+  summarise(Read_count = sum(Expression)) |> 
+  mutate(Sample = factor(Sample, 
+                         levels = c("1L", "1N",
+                                    "2L", "2N",
+                                    "3L", "3N",
+                                    "4L", "4N",
+                                    "5L", "5N",
+                                    "6L", "6N",
+                                    "7L", "7N",
+                                    "8L", "8N",
+                                    "9L", "9N",
+                                    "10L", "10N", 
+                                    "11L", "11N", 
+                                    "12L", "12N", 
+                                    "13L", "13N", 
+                                    "14L", "14N",
+                                    "15L", "15N",
+                                    "16L", "16N",
+                                    "17L", "17N",
+                                    "18L", "18N",
+                                    "19L", "19N",
+                                    "20L", "20N",
+                                    "21L", "21N",
+                                    "22L", "22N")
+         ))
+
+
+Sample_count |> 
+  ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = Sample)) +
+  geom_bar(stat = 'identity') +
+  coord_flip() +
+  labs(title = 'Number of Read in Each Sample',
+       x = 'Sample',
+       y = 'Number of reads') +
+  theme_minimal() +
+  theme(plot.title = element_text(vjust = 2,
+                                  hjust = 0.5,
+                                  face = 'bold'),
+        panel.border = element_rect(colour = "black", 
+                                    fill = 'transparent',
+                                    size = 0.5),
+        legend.position = 'none')
+```
