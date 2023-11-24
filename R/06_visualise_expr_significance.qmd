@@ -139,8 +139,7 @@ merged_expr_gene_data |>
 ```{r fig.width=5, fig.height=5}
 
 
-arranged_merged_expr_gene_data <- 
-  merged_expr_gene_data |>
+arranged_merged_expr_gene_data <- merged_expr_gene_data |>
   arrange(mean_log2_expr_change) |> 
   dplyr::slice(c(1:50, (n()-50):n()))
 
@@ -208,21 +207,19 @@ p2
 data_with_avg_log2 <- arranged_merged_expr_gene_data |> 
   pivot_wider(names_from = Tissue_type,
               values_from = mean_log2_expr) |> 
-  mutate(avg_mean_log2_expr = (Lesion + Perilesion)/2) 
-
-arranged_merged_expr_gene_data
-data_with_avg_log2
+  mutate(avg_mean_log2_expr = (Lesion + Perilesion)/2) |>
+  filter(!is.na(avg_mean_log2_expr))
 
 
 midpoint3 <- data_with_avg_log2 |> 
-  summarize(median = 
-            median(avg_mean_log2_expr)) |> 
+  summarize(median = median(avg_mean_log2_expr)) |> 
   pull(median)
+
 
 p3 <- data_with_avg_log2 |> 
   ggplot(aes(x = 'log2Avgexpr', y = fct_reorder(SYMBOL, mean_log2_expr_change), fill = avg_mean_log2_expr)) + 
   geom_tile() +  
-  geom_text(aes(label = round(mean_log2_expr_change, 3)), color = "black", size = 3) +  # Adds the text labels on top of the tiles
+  geom_text(aes(label = round(avg_mean_log2_expr, 3)), color = "black", size = 3) +  # Adds the text labels on top of the tiles
   scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white', midpoint = midpoint3) +
   labs(fill = 'avglog2expr') +
   theme_minimal() +
