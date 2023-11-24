@@ -75,6 +75,7 @@ wide_data |>
 ```{r}
 # Change to this one
 wide_data |>
+  dplyr::filter(Tissue_type == "Lesion") |> 
   group_by(Smoker, Gender) |>
   summarize(n = n()) |> 
   ungroup()
