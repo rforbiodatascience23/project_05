@@ -266,7 +266,7 @@ midval <- arranged_merged_expr_gene_data |>
 
 most_upreg |>  
   ggplot(aes(x = Tissue_type, 
-             y = fct_reorder(SYMBOL, mean_log2_expr_change), 
+             y = fct_reorder(SYMBOL, -mean_log2_expr_change), 
              fill = mean_log2_expr)) + 
   geom_tile() +
   scale_fill_gradient2(low = 'blue', 
