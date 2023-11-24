@@ -150,7 +150,7 @@ model_data <- meta_gene_table |>
 
 ```{r}
 # Unpack the models and adjust p-values for multiple comparisons
-# significant gene epxpression difference when adjuste p-value > 0.05
+# significant gene epxpression difference when adjuste p-value > 0.01
 model_estimates <- model_data |> 
   unnest(model_object_tidy) |> 
   ungroup() |> 
