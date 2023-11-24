@@ -14,8 +14,8 @@ library(janitor)
 
 ```{r}
 # Loading the data
-path_gene = "../data/_raw/GSE151243_Raw_gene_counts_matrix.txt.gz"
-path_meta = "../data/_raw/GSE151243_series_matrix.txt.gz"
+path_gene = "../data/_raw/GSE151243_Raw_gene_counts_matrix.txt"
+path_meta = "../data/_raw/GSE151243_series_matrix.txt"
 gene_table <- read_table(path_gene, col_names = TRUE)
 meta_table <- read_table(path_meta, skip = 33, na = 'NA', col_names = TRUE)
 ```
