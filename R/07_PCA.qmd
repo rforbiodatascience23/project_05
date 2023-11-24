@@ -53,7 +53,7 @@ pca_fit <-
   prcomp()
 
 
-pca_fit |> 
+PCA_plot <- pca_fit |> 
   augment(pca_data) |> 
   ggplot(aes(.fittedPC1, 
              .fittedPC2, 
@@ -76,9 +76,9 @@ pca_fit |>
         panel.grid.minor = element_blank()
         ) 
 
+ggsave("PCA.png", PCA_plot, path = "../pictures") 
 
-
-  
+  PCA_plot
 ```
 
 ```{r}
