@@ -14,4 +14,10 @@ quarto::quarto_render("./02_clean.qmd")
 quarto::quarto_render("./03_annotation.qmd")
 quarto::quarto_render("./04_log2_transformation.qmd")
 quarto::quarto_render("./05_describe.qmd")
+
+quarto_render(
+  input = '05_describe.qmd',
+)
+
+quarto_rende
 ```
