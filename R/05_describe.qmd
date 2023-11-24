@@ -1,6 +1,8 @@
 ---
 title: "05_describe"
 format: html
+project:
+    output-dir: '../Docs'
 editor: visual
 bibliography: references.bib
 ---
