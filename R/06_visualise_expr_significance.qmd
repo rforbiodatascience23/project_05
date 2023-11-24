@@ -28,15 +28,12 @@ meta_cols <- c('Sample',
                'BMI')
 
 
-gene_cols <- data |> 
+gene_cols <- expression_data |> 
   dplyr::select(-one_of(meta_cols)) |> 
   colnames()  
 ```
 
 ```{r}
-
-
-
 expr_diff_ranked_data <- expression_data |> 
   # Recreate tissue_type variable
   pivot_longer(c(log2_Lesion, log2_Perilesion), 
@@ -67,8 +64,7 @@ expr_diff_ranked_data <- expression_data |>
 
 ```{r}
 # Collect information about the genes
-gene_info <- 
-  expression_data |> 
+gene_info <- expression_data |> 
   dplyr::select(gene,
                 SYMBOL,
                 GENENAME,
