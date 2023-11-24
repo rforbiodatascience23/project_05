@@ -15,33 +15,12 @@ library(broom)
 meta_gene_table = read_tsv("../data/meta_gene_table.tsv")
 ```
 
-## Remove columns Tissue and Patient_id
-
-Tissue and Patient_id are redundant columns, we therefore drop them.
-
-```{r}
-# Drop Columns 'Tissue' and 'Patient_id'
-# Tissue: all rows are 'Skin', hence does not provide information
-# Patient_id: The same information as 'Sample'
-
-meta_gene_table <- meta_gene_table |> 
-  dplyr::select(!c('Tissue','Patient_id'))
-```
-
-## Find columns containing missing values
-
-**Save youself sometime:** the result of this time requiring analysis, is there are no columns containing missing values
-
-Count the number of missing value in each columns.
-
 ```{r}
 # Get the number of missing values
 # SUPER LONG run time for this cell
 missing_values <- meta_gene_table |>
   summarise(across(everything(), ~ sum(is.na(.))))
 ```
-
-Find the names of columns that contained missing value.
 
 ```{r}
 # Checking if some columns have missing values
@@ -50,118 +29,23 @@ Find the names of columns that contained missing value.
 missing_values_t <- missing_values |>
   t() |>
   as.data.frame()
-
 colnames(missing_values_t) = c("Missing_values")
-
 missing_values_t |>
   filter(Missing_values != 0)
 ```
 
-The result showed that no columns contained any missing values.
+```{r}
+# Drop Columns 'Tissue' and 'Patient_id'
+# Tissue: all rows are 'Skin', hence does not provide information
+# Patient_id: The same information as 'Sample'
 
-## Removes zero expression genes
-
-Find all the gene names, that have zero expression across all samples
+meta_gene_table <- meta_gene_table |> 
+  select(!c('Tissue','Patient_id'))
+```
 
 ```{r}
 # Remove genes that have 0 expression for all patients (observed when analysing expression significance)
-gene_cols <- meta_gene_table |> 
-  dplyr::select(starts_with('ENSG')) |> 
-  colnames()
 
-# get genes names that have 0 expression
-zero_expression_genes <- 
-  meta_gene_table |>
-  pivot_longer(all_of(gene_cols)) |> 
-  group_by(name) |> 
-  summarise(sum = sum(value)) |> 
-  filter(sum == 0) |> 
-  pull(name)
-
-```
-
-Remove genes with zero_expression all across
-
-```{r}
-# select non 0 expression genes from the data
-meta_gene_table <- meta_gene_table |> 
-  dplyr::select(-one_of(zero_expression_genes))
-```
-
-## Removes genes with non-significant change in expression level (p=0.05)
-
-Find number of genes before removing genes with non-significant change in expression
-
-```{r}
- 
-gene_cols <-  
-  meta_gene_table |> 
-  dplyr::select(starts_with('ENSG')) |> 
-  colnames()
-
-before_model <- 
-  gene_cols |> 
-  length()
-```
-
-Using linear model to model expression
-
-```{r}
-# Run time is long
-model_data <- meta_gene_table |> 
-  mutate(Tissue_type = ifelse(Tissue_type == "Lesion", 1, 0)) |>  
-  dplyr::select(Sample, Tissue_type, all_of(gene_cols)) |>  
-  pivot_longer(-c(Sample, Tissue_type),
-               names_to = 'gene', 
-               values_to = 'expression'
-               ) |> 
-  group_by(gene) |> 
-  nest() |> 
-  mutate(model_object = map(
-                  .x = data,
-                  ~lm(formula = expression ~ Tissue_type, 
-                  data = .x)
-                  )
-         ) |>
-  mutate(model_object_tidy = map(model_object,
-                                ~tidy(.x,
-                                      conf.int = TRUE, 
-                                      conf.level = 0.95))
-         )
-```
-
-Create categorical variable that classifies genes with significant change in expression level. Genes with adj. p-val below 0.05 is categorized as significant.
-
-```{r}
-# Unpack the models and adjust p-values for multiple comparisons
-# significant gene epxpression difference when adjuste p-value > 0.05
-model_estimates <- model_data |> 
-  unnest(model_object_tidy) |> 
-  ungroup() |> 
-  filter(term == 'Tissue_type') |> 
-  select(c('gene','p.value','estimate','conf.low','conf.high')) |> 
-  mutate('q.value' = p.adjust(p.value)) |> 
-  mutate('is_significant' = case_when(q.value > 0.05 ~ 'no',
-                                      .default = 'yes') ) 
-```
-
-Find the name and number of genes with significant change in expression
-
-```{r}
-sig_genes <- model_estimates |> 
-  filter(is_significant == 'yes') |> 
-  pull(gene)
-
-model_res <- data.frame(
-               before_model = before_model,
-               after_model = length(sig_genes))
-
-model_res
-```
-
-Remove the non-significant columns
-
-```{r}
 meta_cols <- c('Sample',
                'Tissue_type',
                'Gender',
@@ -169,41 +53,39 @@ meta_cols <- c('Sample',
                'Smoker',
                'Age',
                'BMI')
+gene_cols <- meta_gene_table |> 
+  select(-one_of(meta_cols)) |> 
+  colnames()
 
-sig_data <- 
-  meta_gene_table |>
-  dplyr::select(all_of(meta_cols),
-                all_of(sig_genes))
-```
-
-```{r}
-write_tsv(model_estimates, 
-          file = "../data/gene_model_estimates.tsv")
-```
-
-## Remove genes that are less than 3-fold up- or down regulated
-
-```{r}
-gene_cols <- sig_data |> 
-  dplyr::select(starts_with('ENSG')) |> 
+# get genes names that have 0 expression (6098 genes are found to be 0 expressed)
+zero_expression_genes <- meta_gene_table |>
+  pivot_longer(all_of(gene_cols)) |> 
+  group_by(name) |> 
+  summarise(sum = sum(value)) |> 
+  filter(sum == 0) |> 
+  ungroup() |> 
+  pivot_wider(names_from = name, values_from = sum) |> 
   colnames()
 ```
 
-We now subset gene with at least 3-fold change in expression. We used 2 filtering approach:
-
--   **Strict** - where the gene must have 3-fold change across all sample.
-
--   **Lose** - the gene only need to have 3-fold change across 1 sample
-
-We ended up with using the lose approach, as no genes satisfied the strict approach
+```{r}
+# select non 0 expression genes from the data (6098 genes are deleted)
+meta_gene_table <- meta_gene_table |> 
+  select(-all_of(zero_expression_genes))
+```
 
 ```{r}
-# Find count before filtering
-gene_number_unfiltred <- 
-  length(gene_cols)
+# Creating a tibble with only the genes columns
+gene_cols <- meta_gene_table |> 
+  select(-all_of(meta_cols)) |> 
+  colnames()
+```
 
-# Calculate the expression difference as expression level of Lesion/Perilesion
-gene_expr_diff <- sig_data |>
+```{r}
+# Subset genes that are 3-fold up or downregulated
+gene_number_unfiltered <- length(gene_cols)
+
+gene_expr_diff <- meta_gene_table |>
   mutate(Sample = str_replace_all(Sample,'L',''), 
          Sample = str_replace_all(Sample,'N','')
          ) |> 
@@ -216,19 +98,14 @@ gene_expr_diff <- sig_data |>
   pivot_wider(names_from = Tissue_type, 
               values_from = expr
               ) |> 
-   # Add a little factor to avoid division with 0
-   mutate(Perilesion = Perilesion + 1e-6) |> 
-  mutate(expr_diff = (Lesion / Perilesion)) |> 
+  mutate(expr_diff = Lesion / Perilesion) |> 
   ungroup()
-
-# Using 2 filtering approach
-# Strict, the gene must have 3-fold change across all sample
-# Lose, the gene only need to have 3-fold change across 1 sample
-
+  
+  
 high_diff_strict <- gene_expr_diff |> 
   group_by(gene) |> 
   filter(all(expr_diff >= 3) | all(expr_diff <= 1/3)) |>
-  dplyr::select(gene) |> 
+  select(gene) |> 
   unique() |> 
   pull(gene)
 
@@ -241,7 +118,7 @@ high_diff_lose <- gene_expr_diff |>
   pull(gene) 
 
 filtering_res <- data.frame(
-            unfiltered = gene_number_unfiltred, 
+            unfiltered = gene_number_unfiltered, 
             filtered_strict = length(high_diff_strict), 
             filtered_loss = length(high_diff_lose)
             )
@@ -250,13 +127,60 @@ filtering_res
 ```
 
 ```{r}
-# Applying filtering loss, and remove genes with less that 3-fold change in expression
-filtered_sig_data <- gene_expr_diff |> 
-  filter(gene %in% high_diff_lose) 
+model_data <- meta_gene_table |> 
+  mutate(Tissue_type = ifelse(Tissue_type == "Lesion", 1, 0)) |>  
+  select(Sample, Tissue_type, all_of(high_diff_lose)) |>  
+  pivot_longer(-c(Sample, Tissue_type),
+               names_to = 'gene', 
+               values_to = 'expression'
+               ) |> 
+  group_by(gene) |> 
+  nest() |> 
+  mutate(model_object = map(
+                  .x = data,
+                  ~lm(formula = expression ~ Tissue_type, 
+                  data = .x))
+         ) |>
+  mutate(model_object_tidy = map(model_object,
+                                ~tidy(.x,
+                                      conf.int = TRUE, 
+                                      conf.level = 0.95))
+         )
+```
+
+```{r}
+# Unpack the models and adjust p-values for multiple comparisons
+# significant gene epxpression difference when adjuste p-value > 0.01
+model_estimates <- model_data |> 
+  unnest(model_object_tidy) |> 
+  ungroup() |> 
+  filter(term == 'Tissue_type') |> 
+  select(c('gene','p.value','estimate','conf.low','conf.high')) |> 
+  mutate('q.value' = p.adjust(p.value)) |> 
+  mutate('is_significant' = case_when(q.value > 0.01 ~ 'no',
+                                      .default = 'yes') ) 
+```
+
+```{r}
+sig_genes <- model_estimates |> 
+  filter(is_significant == 'yes') |> 
+  pull(gene)
+
+model_res <- data.frame(after_filtering = length(high_diff_lose),
+             after_model = length(sig_genes))
+
+model_res
+```
+
+```{r}
+sig_data <- gene_expr_diff |> 
+  filter(gene %in% sig_genes) 
 ```
 
 ```{r}
 # We save the cleaned data frame
-write_tsv(filtered_sig_data, 
+write_tsv(sig_data, 
           file = "../data/cleaned_meta_gene_table.tsv")
+write_tsv(model_estimates, 
+          file = "../data/gene_model_estimates.tsv")
 ```
