@@ -93,13 +93,11 @@ Find number of genes before removing genes with non-significant change in expres
 
 ```{r}
  
-gene_cols <-  
-  meta_gene_table |> 
+gene_cols <- meta_gene_table |> 
   dplyr::select(starts_with('ENSG')) |> 
   colnames()
 
-before_model <- 
-  gene_cols |> 
+before_model <- gene_cols |> 
   length()
 ```
 
