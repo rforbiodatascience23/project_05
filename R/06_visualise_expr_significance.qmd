@@ -29,7 +29,7 @@ meta_cols <- c('Sample',
 
 
 gene_cols <- expression_data |> 
-  dplyr::select(-one_of(meta_cols)) |> 
+  dplyr::select(-all_of(meta_cols)) |> 
   colnames()  
 ```
 
@@ -136,13 +136,18 @@ merged_expr_gene_data |>
 
 ```
 
-```{r fig.width=5, fig.height=5}
-
-
+```{r}
 arranged_merged_expr_gene_data <- merged_expr_gene_data |>
   arrange(mean_log2_expr_change) |> 
-  dplyr::slice(c(1:50, (n()-50):n()))
+  dplyr::slice(c(1:50, (n()-49):n()))
 
+data_with_avg_log2 <- arranged_merged_expr_gene_data |> 
+  pivot_wider(names_from = Tissue_type,
+              values_from = mean_log2_expr) |> 
+  mutate(avg_mean_log2_expr = (Lesion + Perilesion)/2)
+```
+
+```{r}
 midval1 <- arranged_merged_expr_gene_data |> 
   summarise(mean = mean(mean_log2_expr)) |> 
   pull(mean)
@@ -170,7 +175,8 @@ p1 <- arranged_merged_expr_gene_data |>
     legend.text = element_text(size = 10),  
     ) +
   # Increase colorbar size
-  guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
+  guides(fill = guide_colourbar(barwidth = 1, barheight = 7))
+p1
 ```
 
 ```{r}
@@ -204,23 +210,23 @@ p2
 ```
 
 ```{r}
-data_with_avg_log2 <- arranged_merged_expr_gene_data |> 
-  pivot_wider(names_from = Tissue_type,
-              values_from = mean_log2_expr) |> 
-  mutate(avg_mean_log2_expr = (Lesion + Perilesion)/2) |>
-  filter(!is.na(avg_mean_log2_expr))
-
-
 midpoint3 <- data_with_avg_log2 |> 
   summarize(median = median(avg_mean_log2_expr)) |> 
   pull(median)
 
 
 p3 <- data_with_avg_log2 |> 
-  ggplot(aes(x = 'log2Avgexpr', y = fct_reorder(SYMBOL, mean_log2_expr_change), fill = avg_mean_log2_expr)) + 
+  ggplot(aes(x = 'log2Avgexpr', 
+             y = fct_reorder(SYMBOL, mean_log2_expr_change), 
+             fill = avg_mean_log2_expr)) + 
   geom_tile() +  
-  geom_text(aes(label = round(avg_mean_log2_expr, 3)), color = "black", size = 3) +  # Adds the text labels on top of the tiles
-  scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white', midpoint = midpoint3) +
+  geom_text(aes(label = round(avg_mean_log2_expr, 3)), 
+            color = "black", size = 3) +  
+  # Adds the text labels on top of the tiles
+  scale_fill_gradient2(low = 'blue', 
+                       high = 'red', 
+                       mid = 'white', 
+                       midpoint = midpoint3) +
   labs(fill = 'avglog2expr') +
   theme_minimal() +
   scale_y_discrete(position = "right") +
