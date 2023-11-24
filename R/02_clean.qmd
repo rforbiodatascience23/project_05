@@ -12,7 +12,7 @@ library(broom)
 
 ```{r}
 # Loading the created dataset
-meta_gene_table = read_tsv("../data/meta_gene_table.tsv")
+meta_gene_table = read_tsv("../data/meta_gene_table.tsv.gz")
 ```
 
 ## Remove columns Tissue and Patient_id
@@ -173,6 +173,7 @@ sig_data <- meta_gene_table |>
 ```
 
 ```{r}
+# save the full modelled data before significant gene selection
 write_tsv(model_estimates, 
           file = gzfile("../data/gene_model_estimates.tsv.gz"))
 ```
