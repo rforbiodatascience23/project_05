@@ -258,18 +258,17 @@ combined_plot
 ```
 
 ```{r fig.width=5, fig.height=5}
-most_upreg <- 
-  merged_expr_gene_data |> 
+most_upreg <- arranged_merged_expr_gene_data |> 
   slice_head(n = 40)
 
-midval <- 
-  expr_diff_ranked_data |> 
-  summarize(median = 
-              median(mean_log2_expr)) |> 
+midval <- arranged_merged_expr_gene_data |> 
+  summarize(median = median(mean_log2_expr)) |> 
   pull(median)
 
 most_upreg |>  
-  ggplot(aes(x = Tissue_type, y = SYMBOL, fill = mean_log2_expr)) + 
+  ggplot(aes(x = Tissue_type, 
+             y = fct_reorder(SYMBOL, mean_log2_expr_change), 
+             fill = mean_log2_expr)) + 
   geom_tile() +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
@@ -301,12 +300,13 @@ most_upreg |>
 ## Looking at the most upregulated and downregulated gene
 
 ```{r fig.width=5, fig.height=5}
-most_downreg <- 
-  merged_expr_gene_data |> 
+most_downreg <- arranged_merged_expr_gene_data |> 
   slice_tail(n = 40) 
                       
 most_downreg |>  
-  ggplot(aes(x = Tissue_type, y = SYMBOL, fill = mean_log2_expr)) + 
+  ggplot(aes(x = Tissue_type, 
+             y = fct_reorder(SYMBOL, mean_log2_expr_change), 
+             fill = mean_log2_expr)) + 
   geom_tile() +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
