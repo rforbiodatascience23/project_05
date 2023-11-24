@@ -1,0 +1,25 @@
+---
+title: "00_main"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(quarto)
+```
+
+```{r}
+dir <- getwd()
+setwd(dir)
+
+
+source("./05_describe.qmd")
+```
+
+```{r}
+quarto::quarto_render("./01_load.qmd")
+quarto::quarto_render("./02_clean.qmd")
+quarto::quarto_render("./03_annotation.qmd")
+quarto::quarto_render("./05_lo.qmd")
+```
