@@ -9,7 +9,7 @@ library(tidyverse)
 ```
 
 ```{r}
-raw_data <- read_tsv('../data/meta_gene_table.tsv.gz')
+raw_data <- read_tsv(gzfile('../data/meta_gene_table.tsv.gz'))
 ```
 
 ## Count for each sample

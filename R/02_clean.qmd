@@ -12,7 +12,7 @@ library(broom)
 
 ```{r}
 # Loading the created dataset
-meta_gene_table = read_tsv("../data/meta_gene_table.tsv.gz")
+meta_gene_table = read_tsv("../data/meta_gene_table.tsv")
 ```
 
 ## Remove columns Tissue and Patient_id
@@ -70,8 +70,7 @@ gene_cols <- meta_gene_table |>
   colnames()
 
 # get genes names that have 0 expression
-zero_expression_genes <- 
-  meta_gene_table |>
+zero_expression_genes <- meta_gene_table |>
   pivot_longer(all_of(gene_cols)) |> 
   group_by(name) |> 
   summarise(sum = sum(value)) |> 
@@ -85,7 +84,7 @@ Remove genes with zero_expression all across
 ```{r}
 # select non 0 expression genes from the data
 meta_gene_table <- meta_gene_table |> 
-  dplyr::select(-one_of(zero_expression_genes))
+  dplyr::select(-all_of(zero_expression_genes))
 ```
 
 ## Removes genes with non-significant change in expression level (p=0.05)
@@ -94,13 +93,11 @@ Find number of genes before removing genes with non-significant change in expres
 
 ```{r}
  
-gene_cols <-  
-  meta_gene_table |> 
+gene_cols <- meta_gene_table |> 
   dplyr::select(starts_with('ENSG')) |> 
   colnames()
 
-before_model <- 
-  gene_cols |> 
+before_model <- gene_cols |> 
   length()
 ```
 
@@ -170,15 +167,14 @@ meta_cols <- c('Sample',
                'Age',
                'BMI')
 
-sig_data <- 
-  meta_gene_table |>
+sig_data <- meta_gene_table |>
   dplyr::select(all_of(meta_cols),
                 all_of(sig_genes))
 ```
 
 ```{r}
 write_tsv(model_estimates, 
-          file = "../data/gene_model_estimates.tsv")
+          file = gzfile("../data/gene_model_estimates.tsv.gz"))
 ```
 
 ## Remove genes that are less than 3-fold up- or down regulated
@@ -258,5 +254,5 @@ filtered_sig_data <- gene_expr_diff |>
 ```{r}
 # We save the cleaned data frame
 write_tsv(filtered_sig_data, 
-          file = "../data/cleaned_meta_gene_table.tsv.gz")
+          file = gzfile("../data/cleaned_meta_gene_table.tsv.gz"))
 ```
