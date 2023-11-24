@@ -31,6 +31,10 @@ meta_table <- meta_table[-1,]
 ```
 
 ```{r}
+meta_table
+```
+
+```{r}
 # Selecting and renaming the columns we are interested in
 meta_table <- meta_table |>
   clean_names() |>
@@ -60,8 +64,13 @@ meta_table <- meta_table |>
 ```
 
 ```{r}
+meta_table
+```
+
+```{r}
 # Tidy columns (with no prefixes)
 meta_table <- meta_table |>
+  mutate_all(~str_replace_all(.,pattern = "\"","")) |>
   mutate(
     Sample = str_split_i(Sample, pattern="_", 2),
     Tissue = gsub("tissue: ", "", Tissue),
@@ -73,6 +82,12 @@ meta_table <- meta_table |>
     Smoker= gsub("smoker: ", "", Smoker),
     BMI= gsub("bmi: ", "", BMI),
   )
+```
+
+```{r}
+meta_table
+
+  
 ```
 
 ```{r}
