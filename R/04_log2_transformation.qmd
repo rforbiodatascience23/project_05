@@ -13,7 +13,7 @@ library(broom)
 ```{r}
 # Output: FALSE
 # Loading the clean dataset
-data = read_tsv("../data/annotated_meta_gene_table.tsv.gz")
+data = read_tsv(gzfile("../data/annotated_meta_gene_table.tsv.gz"))
 ```
 
 ## log2_transformation of data
@@ -45,5 +45,5 @@ aug_data <- data |>
 ```{r}
 # We save the augmented data frame
 write_tsv(aug_data, 
-          file = "../data/augmented_meta_gene_table.tsv.gz")
+          file = gzfile("../data/augmented_meta_gene_table.tsv.gz"))
 ```

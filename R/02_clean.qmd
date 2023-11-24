@@ -167,15 +167,14 @@ meta_cols <- c('Sample',
                'Age',
                'BMI')
 
-sig_data <- 
-  meta_gene_table |>
+sig_data <- meta_gene_table |>
   dplyr::select(all_of(meta_cols),
                 all_of(sig_genes))
 ```
 
 ```{r}
 write_tsv(model_estimates, 
-          file = "../data/gene_model_estimates.tsv")
+          file = gzfile("../data/gene_model_estimates.tsv.gz"))
 ```
 
 ## Remove genes that are less than 3-fold up- or down regulated
@@ -255,5 +254,5 @@ filtered_sig_data <- gene_expr_diff |>
 ```{r}
 # We save the cleaned data frame
 write_tsv(filtered_sig_data, 
-          file = "../data/cleaned_meta_gene_table.tsv.gz")
+          file = gzfile("../data/cleaned_meta_gene_table.tsv.gz"))
 ```
