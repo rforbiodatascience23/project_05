@@ -12,7 +12,7 @@ library(broom)
 
 ```{r}
 # Loading the created dataset
-meta_gene_table = read_tsv("../data/meta_gene_table.tsv.gz")
+meta_gene_table = read_tsv("../data/meta_gene_table.tsv")
 ```
 
 ## Remove columns Tissue and Patient_id
