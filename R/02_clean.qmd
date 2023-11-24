@@ -85,7 +85,7 @@ Remove genes with zero_expression all across
 ```{r}
 # select non 0 expression genes from the data
 meta_gene_table <- meta_gene_table |> 
-  dplyr::select(-one_of(zero_expression_genes))
+  dplyr::select(-all_of(zero_expression_genes))
 ```
 
 ## Removes genes with non-significant change in expression level (p=0.05)
