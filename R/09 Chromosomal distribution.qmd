@@ -16,7 +16,7 @@ expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv')
 # Rearrange data
 arranged_data <- 
   expression_data |> 
-  select(-c(Lesion, Perilesion)) |> 
+  dplyr::select(-c(Lesion, Perilesion)) |> 
   pivot_longer(c(log2_Lesion, log2_Perilesion),
                names_to = 'Tissue_type',
                values_to = 'log2expr') |> 
@@ -37,7 +37,7 @@ upreg_count <-
   group_by(gene) |> 
   # Only look at the upregulated genes
   filter(any(expr_diff >= 3)) |> 
-  select(gene) |> 
+  dplyr::select(gene) |> 
   unique() |> 
   nrow()
 
@@ -46,7 +46,7 @@ downreg_count <-
   group_by(gene) |> 
   # Only look at the upregulated genes
   filter(any(expr_diff <= 1/3)) |> 
-  select(gene) |> 
+  dplyr::select(gene) |> 
   unique() |> 
   nrow()
 
