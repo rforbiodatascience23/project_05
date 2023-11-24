@@ -8,18 +8,25 @@ editor: visual
 
 # Presentation Group 5
 
-## Quarto
+## Loading the data
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+We read the data from GSE151243
 
-## Bullets
+```{.r code-line-numbers="3"}
+# Loading the data
+path_gene = "../data/_raw/GSE151243_Raw_gene_counts_matrix.txt"
+path_meta = "../data/_raw/GSE151243_series_matrix.txt"
+gene_table <- read.table(path_gene, header = TRUE)
+meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
+```
 
-When you click the **Render** button a document will be generated that includes:
+## Cleaning the data
 
--   Content authored with markdown
--   Output from executable code
+How to add a picture from the pictures folder
 
-## Code
+![PCA plot for augmented data](../pictures/PCA.png)
+
+## Annotate the data (Augmentation)
 
 When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
 
