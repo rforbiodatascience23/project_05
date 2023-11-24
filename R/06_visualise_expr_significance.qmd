@@ -76,8 +76,7 @@ gene_info
 
 ```{r}
 # Merge information
-merged_expr_gene_data <- 
-  expr_diff_ranked_data |> 
+merged_expr_gene_data <- expr_diff_ranked_data |> 
   merge(gene_info, 
         by.x = "gene", 
         by.y = "gene")
@@ -87,8 +86,7 @@ merged_expr_gene_data <-
 
 ```{r fig.height = 8}
 
-merged_sig_data <-
-  significans_data |> 
+merged_sig_data <- significans_data |> 
   merge(gene_info, 
         by.x = 'gene',
         by.y = 'gene')
@@ -113,7 +111,7 @@ merged_sig_data |>
                                   face = 'bold')) 
 ```
 
-```{r fig.width = 4, fig.height =6}
+```{r fig.width = 4, fig.height =`6}
 merged_expr_gene_data |> 
   ggplot(aes(y = mean_log2_expr_change, x = 0)) +
   geom_violin(fill = 'red', alpha = 0.5, adjust = 0.5, width = 0.5) +
@@ -331,4 +329,25 @@ most_downreg |>
   ) +
   # Increase colorbar size
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
+```
+
+```{r}
+midval <- data_with_avg_log2 |>
+  summarize(median = median(mean_log2_expr_change)) |> 
+  pull(median)
+
+data_with_avg_log2 |> 
+  ggplot(aes(xmin=Lesion, 
+             xlower=Lesion,
+             xmiddle=(Lesion+Perilesion)/2,
+             xmax=Perilesion, 
+             xupper=Perilesion,
+             fill=mean_log2_expr_change,
+             y=fct_reorder(SYMBOL, (Lesion+Perilesion)/2))) +
+  geom_boxplot(stat="identity")  +
+  scale_fill_gradient2(low = 'blue', 
+                       high = 'red', 
+                       mid = 'white',
+                       midpoint = midval)
+
 ```
