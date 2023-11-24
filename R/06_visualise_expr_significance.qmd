@@ -152,7 +152,7 @@ midval1 <-
       
 p1 <- 
   arranged_merged_expr_gene_data |>  
-  ggplot(aes(x = Tissue_type, y = SYMBOL, fill = mean_log2_expr)) + 
+  ggplot(aes(x = Tissue_type, y = fct_reorder(SYMBOL, mean_log2_expr_change), fill = mean_log2_expr)) + 
   geom_tile() +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
@@ -184,7 +184,7 @@ midval2 <-
 
 p2 <- 
   arranged_merged_expr_gene_data |>
-  ggplot(aes(x = "log2FC", y = SYMBOL, fill = mean_log2_expr_change)) +
+  ggplot(aes(x = "log2FC", y = fct_reorder(SYMBOL, mean_log2_expr_change), fill = mean_log2_expr_change)) +
   geom_tile() +  
   geom_text(aes(label = round(mean_log2_expr_change,3)), color = "black", size = 3) +  # Adds the text labels on top of the tiles
   scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white', midpoint = midval2) +
@@ -217,7 +217,7 @@ midpoint3 <-
 
 p3 <- 
   data_with_avg_log2 |> 
-  ggplot(aes(x = 'log2Avgexpr', y = fct_inorder(SYMBOL), fill = avg_mean_log2_expr)) + 
+  ggplot(aes(x = 'log2Avgexpr', y = fct_reorder(SYMBOL, mean_log2_expr_change), fill = avg_mean_log2_expr)) + 
   geom_tile() +  
   geom_text(aes(label = round(mean_log2_expr_change, 3)), color = "black", size = 3) +  # Adds the text labels on top of the tiles
   scale_fill_gradient2(low = 'blue', high = 'red', mid = 'white', midpoint = midpoint3) +
