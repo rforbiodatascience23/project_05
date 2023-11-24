@@ -16,49 +16,63 @@ expression_data <- read_tsv(gzfile('../data/augmented_meta_gene_table.tsv.gz'))
 ```
 
 ```{r}
-meta_cols <- c('Sample',
-               'Gender',
-               'Race',
-               'Smoker',
-               'Age',
-               'BMI')
+all_cols <- expression_data %>% 
+  colnames()
+```
 
+```{r}
+all_cols
+```
 
-pca_data <- 
-  expression_data |> 
-  select(all_of(meta_cols), 
-         gene,
-         log2_Lesion, 
-         log2_Perilesion) |> 
-  pivot_longer(c(log2_Lesion, log2_Perilesion),
-               names_to = 'Tissue_type',
-               values_to = 'log2_expr') |> 
-  mutate(Tissue_type = if_else(Tissue_type == 'log2_Lesion', 
-                               'Lesion', 
-                               'Perilesion')) |> 
-  pivot_wider(names_from = gene, values_from = log2_expr) |> 
-  mutate(Sample = 
-           if_else(Tissue_type == 'Lesion', 
-                   paste0(Sample, 'L'),
-                   paste0(Sample, 'P')
-                   )
-         )
+```{r}
+pca_data <- expression_data %>% 
+  dplyr::select(-one_of(c("log2_Lesion",
+                          "log2_Perilesion",
+                          "GENENAME",
+                          "CHR",
+                          "log2_expr_change",
+                          "expr_diff",
+                          "Sample",
+                          "SYMBOL"))) %>% 
+  mutate(Age = cut_interval(Age, length = 10)) %>% 
+  mutate(BMI = case_when(BMI < 18.5 ~ 'Underweight',
+                         18.5 <= BMI & BMI < 25 ~ 'Healthy weight',
+                         25 <= BMI & BMI < 30 ~ 'Overweight',
+                         BMI >= 30 ~ 'Obese'))
+  
+```
 
+```{r}
+pca_data <- pca_data %>% 
+  pivot_longer(c("Lesion","Perilesion"),
+               names_to = "Tissue",
+               values_to = "expr") %>% 
+  pivot_wider(id_cols = c("Gender",
+                          "Race",
+                          "Smoker",
+                          "Age",
+                          "BMI",
+                          #"SYMBOL",
+                          "Tissue"),
+              names_from = "gene",
+              values_from = "expr",
+              values_fn = mean)
+```
 
-pca_fit <- 
-  pca_data |> 
-  select(starts_with('ENSG')) |> 
-# To standarize the data. I don't think it make the biggest difference. Also, i guess, it would 
-#  scale() |> 
-  prcomp()
+```{r}
+pca_fit <- pca_data %>% 
+  dplyr::select(starts_with('EN')) %>% # retain only numeric columns
+  scale() %>% # scale data
+  prcomp() # do PCA
+```
 
-
+```{r}
 PCA_plot <- pca_fit |> 
   augment(pca_data) |> 
   ggplot(aes(.fittedPC1, 
              .fittedPC2, 
-             color = Tissue_type,
-             label = Sample)) + 
+             color = Tissue,
+             label = Race)) + 
   geom_point(size = 1.5) +
   labs(title = 'PCA of RNA-seq Data by Tissue Type',
        x = 'PC1',
@@ -76,47 +90,25 @@ PCA_plot <- pca_fit |>
         panel.grid.minor = element_blank()
         ) 
 
-ggsave("PCA.png", PCA_plot, path = "../pictures") 
+#ggsave("PCA.png", PCA_plot, path = "../pictures") 
 
   PCA_plot
 ```
 
 ```{r}
+pca_fit %>%
+  tidy(matrix = "eigenvalues")
+```
 
-# Does make that much sense to look at, i suppose
-
-pca_data <- 
-  pca_data |> 
-  mutate(Smoker = case_when(Smoker == 'E' ~ 'Ex-smoker',
-                            Smoker == 'Y' ~ 'Yes',
-                            Smoker == 'N' ~ 'No'
-                            )
-         )
-
-
-pca_fit |> 
-  augment(pca_data) |> 
-  ggplot(aes(.fittedPC1, 
-             .fittedPC2, 
-             color = Smoker,
-             label = Sample)) + 
-  geom_point(size = 1.5) +
-  labs(title = 'PCA of RNA-seq Data by Smoking History',
-       x = 'PC1',
-       y = 'PC2',
-       color = 'Smoking history') +
-  # Adds sample labels
-  geom_text_repel(size = 2.5,
-                  min.segment.length = 0,
-                  segment.linetype = 4) + 
-  theme_minimal() +
-  theme(plot.title = 
-          element_text(hjust = 0.5,
-                       vjust = 2,
-                       face = 'bold'),
-        panel.grid.minor = element_blank()
-        )
-
-
-
+```{r}
+pca_fit %>%
+  tidy(matrix = "eigenvalues") %>%
+  ggplot(aes(PC, std.dev)) +
+  geom_col(fill = "#56B4E9", alpha = 0.8) +
+  scale_x_continuous(breaks = 1:34) +
+  #scale_y_continuous(
+  #  labels = scales::percent_format(),
+  #  expand = expansion(mult = c(0, 0.01))
+  #) +
+  theme_minimal()
 ```
