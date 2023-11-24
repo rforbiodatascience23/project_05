@@ -40,8 +40,3 @@ annotated_data <-
 ```{r}
 write_tsv(annotated_data, '../data/annotated_meta_gene_table.tsv')
 ```
-
-```{r}
-data <- read_tsv('../data/annotated_meta_gene_table.tsv')
-data
-```
