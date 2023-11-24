@@ -13,8 +13,8 @@ library(patchwork)
 
 ```{r}
 # load data
-expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv')
-significans_data <- read_tsv('../data/gene_model_estimates.tsv')
+expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv.gz')
+significans_data <- read_tsv('../data/gene_model_estimates.tsv.gz')
 ```
 
 ```{r}

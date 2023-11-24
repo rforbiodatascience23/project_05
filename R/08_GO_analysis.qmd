@@ -14,7 +14,7 @@ library(org.Hs.eg.db)
 
 ```{r}
 # output: FALSE
-expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv')
+expression_data <- read_tsv('../data/augmented_meta_gene_table.tsv.gz')
 ```
 
 ## Gene Ontology analysis for genes with upregulated expression
