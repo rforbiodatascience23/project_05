@@ -12,7 +12,7 @@ editor: visual
 
 We read the data from GSE151243
 
-```{.r code-line-numbers="3"}
+``` {.r code-line-numbers="3"}
 # Loading the data
 path_gene = "../data/_raw/GSE151243_Raw_gene_counts_matrix.txt"
 path_meta = "../data/_raw/GSE151243_series_matrix.txt"
@@ -24,7 +24,7 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 How to add a picture from the pictures folder
 
-![PCA plot for augmented data](../pictures/PCA.png)
+![PCA plot for augmented data](../pictures/PCA_score.png)
 
 ## Annotate the data (Augmentation)
 

@@ -273,7 +273,7 @@ attribute_dist_table |>
              color = 'black',
              size = 0.5) +
   facet_wrap(~Race) +
-  labs(title = 'BMI Distribution by Smoking history and Gender',
+  labs(title = 'BMI Distribution by Race',
        x = 'BMI group',
        y = 'n') +
   theme_minimal() +
