@@ -1,16 +1,16 @@
 ---
-title: "Presentation"
+title: "Presentation Group 5"
+subtitle: "Emmanuel, Adomas, Subhayan, Chuang"
 format: 
   revealjs: 
     theme: dark
     slide-number: true
     show-slide-number: all
     embed-resources: true
+    fontsize: "20pt"
+
 editor: visual
 ---
-
-# Presentation Group 5
-
 
 ## Introduction
 
@@ -18,20 +18,15 @@ Data from undefined A Hidradenitis Suppurativa Molecular Disease Signature Deriv
 
 ## Trace the Flow of the Project
 
-
-![](../pictures/flowchart_cut.png)
-## Load
+![](../pictures/flowchart_cut.png) \## Load
 
 ## Data Cleaning
 
-- Start with 58051 genes in the pool
-  - Remove gene if 0 expression for all patients (-6098)
-  - Remove gene if expression linear model coefficient not significant (p>0.05) (-51437)
-  - Remove gene if expression change < 3-fold between the diseased tissue groups (-29)
-  
-- 487 Genes remain for analysis
-
-
+-   Start with 58051 genes in the pool
+    -   Remove gene if 0 expression for all patients (-6098)
+    -   Remove gene if expression linear model coefficient not significant (p\>0.05) (-51437)
+    -   Remove gene if expression change \< 3-fold between the diseased tissue groups (-29)
+-   487 Genes remain for analysis
 
 ## Materials and Methods
 
@@ -51,10 +46,20 @@ How to add a picture from the pictures folder
 
 ![PCA plot for augmented data](../pictures/PCA_score.png)
 
+## Gene Ontology Analysis
+
 ## Discussion
 
-When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
+-   Observations by Freudenberg et al.
+    -   Gene Upregulation
+        -   MMP1, C-X-C, SERPINB4, and S100.
+    -   Enhanced Immune Responses
+        -   Upregulation in both adaptive and innate immune system functions.
+    -   Reduced Keratinization and Intermediate Filament Activity
 
-```{r}
-1 + 1
-```
+-   Potential Causes for Variance in Results
+    -   Model Selection
+        -   lm vs glm, Empirical Bayes
+    -   Adjusted P-value Cutoff Choices
+    -   Gene Selection Criteria
+        -   Focus only on protein-encoding genes
