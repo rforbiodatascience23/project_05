@@ -5,6 +5,9 @@ editor: visual
 ---
 
 ```{r}
+library(tidyverse)
+library(janitor)
+library(broom)
 library(quarto)
 ```
 
@@ -14,10 +17,10 @@ quarto::quarto_render("./02_clean.qmd")
 quarto::quarto_render("./03_annotation.qmd")
 quarto::quarto_render("./04_log2_transformation.qmd")
 quarto::quarto_render("./05_describe.qmd")
-quarto::quarto_render("./06_visualise_expr_significance.qmd")
-quarto::quarto_render("./07_PCA.qmd")
+quarto::quarto_render("./06_visualise_expr_significance.qmd") # Could not run 
+quarto::quarto_render("./07_PCA.qmd") # Could not run
 quarto::quarto_render("./08_GO_analysis.qmd")
-quarto::quarto_render("./09_Chromosomal_distribution.qmd")
-quarto::quarto_render("./10_Raw count analysis.qmd")
+quarto::quarto_render("./09_Chromosomal_distribution.qmd") # Could not run
+quarto::quarto_render("./10_Raw count analysis.qmd") # Could not run 
 quarto::quarto_render("./presentation.qmd")
 ```
