@@ -47,8 +47,7 @@ upreg_GO_res <-
 ```{r fig.height=12, fig.width = 8}
 
 upreg_GO_res |> 
-  arrange(p.adjust) |> 
-  ggplot(aes(x = short_description, y = Count, fill = p.adjust)) +  
+  ggplot(aes(x = fct_reorder(short_description, p.adjust), y = Count, fill = p.adjust)) +  
   # stat = 'identity' tells y is the height of bars
   # position = 'dodge' basicallty says that the x-axis is catagorical
   geom_bar(stat = "identity", 
@@ -81,18 +80,19 @@ upreg_GO_res |>
 
 upreg_GO_res <- 
   upreg_GO_res |> 
-   mutate(short_description = ifelse(str_length(Description) > 40,
-                                   paste0(str_sub(Description, 1, 40), "..."),
+   mutate(short_description = ifelse(str_length(Description) > 30,
+                                   paste0(str_sub(Description, 1, 30), "..."),
                                    Description)) |>    
   mutate(short_description = str_wrap(short_description, 
                                       width = 20)) 
-          
 
 
 upreg_GO_res |> 
-  arrange(p.adjust) |>
-  slice_head(n = 20) |> 
-  ggplot(aes(x = short_description, y = Count, fill = p.adjust)) +  
+  arrange(desc(p.adjust)) |>
+  dplyr::slice(1:20) |> 
+  ggplot(aes(x = fct_reorder(short_description, p.adjust), 
+             y = Count, 
+             fill = p.adjust)) +  
   # stat = 'identity' tells y is the height of bars
   # position = 'dodge' basicallty says that the x-axis is catagorical
   geom_bar(stat = "identity", 
@@ -111,6 +111,7 @@ upreg_GO_res |>
                               face = 'bold'),
     axis.text.x = element_text(size = 11),
     axis.text.y = element_text(size = 11),
+    axis.title.y = element_blank(),
     panel.border = element_rect(colour = "black", fill = 'transparent',size = 0.5) 
         ) +
   coord_flip()  # Flip coordinates to make the bars horizontal
@@ -136,8 +137,8 @@ downreg_GO_res <- enrichGO(gene = downregulated,
 
 downreg_GO_res <- 
   downreg_GO_res |> 
-   mutate(short_description = ifelse(str_length(Description) > 40,
-                                   paste0(str_sub(Description, 1, 40), "…"),
+   mutate(short_description = ifelse(str_length(Description) > 30,
+                                   paste0(str_sub(Description, 1, 30), "..."),
                                    Description)) |> 
   mutate(short_description = str_wrap(short_description, 20))
           
@@ -147,8 +148,9 @@ downreg_GO_res <-
 ```{r fig.height=10, fig.width = 6}
 
 downreg_GO_res |> 
-  arrange(p.adjust) |>
-  ggplot(aes(x = short_description, y = Count, fill = p.adjust)) +  
+  ggplot(aes(x = fct_reorder(short_description, p.adjust), 
+             y = Count, 
+             fill = p.adjust)) +  
   # stat = 'identity' tells y is the height of bars
   # position = 'dodge' basicallty says that the x-axis is catagorical
   geom_bar(stat = "identity", 
@@ -156,7 +158,7 @@ downreg_GO_res |>
   scale_fill_gradient(low = "blue", 
                       high = "red") +  
   labs(
-    title = "Differential Expression Profile: Top 20 Gene Ontology Terms",
+    title = "Differential Expression Profile: Bottom Gene Ontology Terms",
     x = "Gene Ontology Term Description", 
     y = "Count",
     fill = "Adjusted p-value"
@@ -167,6 +169,7 @@ downreg_GO_res |>
                               face = 'bold'),
     axis.text.x = element_text(size = 11),
     axis.text.y = element_text(size = 11),
+    axis.title.y = element_blank(),
     panel.border = element_rect(colour = "black", fill = 'transparent',size = 0.5) 
         ) +
   coord_flip()  # Flip coordinates to make the bars horizontal
