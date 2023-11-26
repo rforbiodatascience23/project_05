@@ -3,6 +3,9 @@ title: "Presentation"
 format: 
   revealjs: 
     theme: dark
+    slide-number: true
+    show-slide-number: all
+    embed-resources: true
 editor: visual
 ---
 
@@ -10,9 +13,7 @@ editor: visual
 
 ## Introduction
 
-Data from undefined A Hidradenitis Suppurativa Molecular Disease Signature Derived from Patient Samples by High-Throughput RNA Sequencing available on GEO 
-RNASeq results for 40 samples.
-
+Data from undefined A Hidradenitis Suppurativa Molecular Disease Signature Derived from Patient Samples by High-Throughput RNA Sequencing available on GEO RNASeq results for 40 samples.
 
 ## Materials and Methods
 
