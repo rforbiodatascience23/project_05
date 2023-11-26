@@ -1,5 +1,5 @@
 ---
-title: "Chromosomal_distribution"
+title: "Read_count_analysis"
 format: html
 editor: visual
 ---
@@ -60,7 +60,7 @@ Sample_count |>
   ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = Sample)) +
   geom_bar(stat = 'identity') +
   coord_flip() +
-  labs(title = 'Number of Read in Each Sample',
+  labs(title = 'Number of Reads in Each Sample',
        x = 'Sample',
        y = 'Number of reads') +
   theme_minimal() +
@@ -71,4 +71,14 @@ Sample_count |>
                                     fill = 'transparent',
                                     size = 0.5),
         legend.position = 'none')
+```
+
+```{r}
+raw_data |> 
+  pivot_longer(high_diff_lose,
+               names_to = "gene",
+               values_to = "expression") |>
+  group_by(Sample)
+#WORK IN PROGRESS
+  
 ```
