@@ -24,7 +24,7 @@ Data from undefined A Hidradenitis Suppurativa Molecular Disease Signature Deriv
 
 ## Data Cleaning
 
-<<<<<<< HEAD
+
 - Start with <span style="color:red;">58051</span> genes in the pool
   1. Remove gene if 0 expression for all patients (<span style="color:orange;">-6098</span>)
   2. Remove gene if expression linear model coefficient not significant between diseased/healthy tissue (p>0.05) (<span style="color:orange;">-51437</span>)
@@ -47,9 +47,21 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ## Results
 
-How to add a picture from the pictures folder
+## Principal Component Analysis
 
-![PCA plot for augmented data](../pictures/PCA_score.png)
+:::: {.columns}
+
+::: {.column width="50%"}
+![Score Plot](../pictures/PCA_score.png)
+:::
+
+::: {.column width="50%"}
+
+
+![Variance Explained](../pictures/PCA_var.png)
+
+:::
+::::
 
 ## Gene Ontology Analysis
 
