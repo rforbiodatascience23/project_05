@@ -76,20 +76,32 @@ gene_info
 
 ```{r}
 # Merge information
-merged_expr_gene_data <- expr_diff_ranked_data |> 
-  merge(gene_info, 
-        by.x = "gene", 
-        by.y = "gene")
+#merged_expr_gene_data <- expr_diff_ranked_data |> 
+ # merge(gene_info, 
+  #      by.x = "gene", 
+   #     by.y = "gene")
 ```
 
-## Plot estimate and confident interval found from lm
+```{r}
+#Use this as join is a tidyverse function
+merged_expr_gene_data <- expr_diff_ranked_data |> 
+  full_join(gene_info,
+            join_by(gene))
+```
+
+##  Plot estimate and confidence interval found from lm
 
 ```{r fig.height = 8}
 
+#merged_sig_data <- significans_data |> 
+  #merge(gene_info, 
+        #by.x = 'gene',
+        #by.y = 'gene')
+
+#Using join
 merged_sig_data <- significans_data |> 
-  merge(gene_info, 
-        by.x = 'gene',
-        by.y = 'gene')
+  inner_join(gene_info,
+            join_by(gene))
 
 
 merged_sig_data |>
@@ -237,6 +249,8 @@ p3
 
 **Note:** Somebody please look through it. I have no idea, why the mean_log2_change and avg_mean_log2_expr are both below 0
 
+\--It is no longer below 0
+
 ```{r fig.width= 6, fig.height=10}
 p1 <- p1 + theme(legend.position = "none")
 
@@ -253,6 +267,8 @@ combined_plot <- (p1 | p2 | p3) +
 
 combined_plot
 ```
+
+##  Looking at the most upregulated and downregulated genes in the lesional samples compared to the perilesional
 
 ```{r fig.width=5, fig.height=5}
 most_upreg <- arranged_merged_expr_gene_data |> 
@@ -293,8 +309,6 @@ most_upreg |>
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
 
 ```
-
-## Looking at the most upregulated and downregulated gene
 
 ```{r fig.width=5, fig.height=5}
 most_downreg <- arranged_merged_expr_gene_data |> 
@@ -356,6 +370,7 @@ p4 <- data_tot_with_avg_log2 |>
              upper=Perilesion,
              fill=mean_log2_expr_change,
              x=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
+  labs(title = "Upregulated genes") +
   geom_boxplot(stat="identity")  +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
@@ -363,16 +378,17 @@ p4 <- data_tot_with_avg_log2 |>
                        midpoint = midval)
 
 p5 <- data_tot_with_avg_log2 |> 
-filter(regulated=="Downregulated") |>
-ggplot(aes(ymin=Lesion, 
+  filter(regulated=="Downregulated") |>
+  ggplot(aes(ymin=Lesion, 
            lower=Lesion,
            middle=avg_mean_log2_expr,
            ymax=Perilesion, 
            upper=Perilesion,
            fill=mean_log2_expr_change,
            x=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
-geom_boxplot(stat="identity")  +
-scale_fill_gradient2(low = 'blue', 
+  labs(title = "Downregulated genes") +
+  geom_boxplot(stat="identity")  +
+  scale_fill_gradient2(low = 'blue', 
                      high = 'red', 
                      mid = 'white',
                      midpoint = midval)
@@ -381,7 +397,12 @@ combined_plot_2 <- (p4 | p5) +
                  plot_layout(ncol = 2, 
                              widths = c(1, 1), 
                              guides = 'collect') & 
-                 theme(legend.position = "bottom")
+                 theme(legend.position = "bottom") +
+                 theme(axis.text.x = element_text(angle = 45,
+                                                  hjust = 1,
+                                                  vjust = 1),
+                       axis.title.x = element_blank())
+
 ggsave("../pictures/boxplot_change.png")
 combined_plot_2
 ```
