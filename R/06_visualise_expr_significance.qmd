@@ -349,13 +349,13 @@ midval <- data_tot_with_avg_log2 |>
 
 p4 <- data_tot_with_avg_log2 |> 
   filter(regulated=="Upregulated") |>
-  ggplot(aes(xmin=Lesion, 
-             xlower=Lesion,
-             xmiddle=avg_mean_log2_expr,
-             xmax=Perilesion, 
-             xupper=Perilesion,
+  ggplot(aes(ymin=Lesion, 
+             lower=Lesion,
+             middle=avg_mean_log2_expr,
+             ymax=Perilesion, 
+             upper=Perilesion,
              fill=mean_log2_expr_change,
-             y=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
+             x=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
   geom_boxplot(stat="identity")  +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
@@ -364,13 +364,13 @@ p4 <- data_tot_with_avg_log2 |>
 
 p5 <- data_tot_with_avg_log2 |> 
 filter(regulated=="Downregulated") |>
-ggplot(aes(xmin=Lesion, 
-           xlower=Lesion,
-           xmiddle=avg_mean_log2_expr,
-           xmax=Perilesion, 
-           xupper=Perilesion,
+ggplot(aes(ymin=Lesion, 
+           lower=Lesion,
+           middle=avg_mean_log2_expr,
+           ymax=Perilesion, 
+           upper=Perilesion,
            fill=mean_log2_expr_change,
-           y=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
+           x=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
 geom_boxplot(stat="identity")  +
 scale_fill_gradient2(low = 'blue', 
                      high = 'red', 
@@ -382,6 +382,6 @@ combined_plot_2 <- (p4 | p5) +
                              widths = c(1, 1), 
                              guides = 'collect') & 
                  theme(legend.position = "bottom")
-
+ggsave("../pictures/boxplot_change.png")
 combined_plot_2
 ```
