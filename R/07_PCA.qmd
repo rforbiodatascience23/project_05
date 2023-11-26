@@ -16,16 +16,30 @@ expression_data <- read_tsv(gzfile('../data/augmented_meta_gene_table.tsv.gz'))
 ```
 
 ```{r}
-all_cols <- expression_data %>% 
+duplicates <- expression_data |> 
+  group_by(gene) |> 
+  filter(n() > 20)
+```
+
+```{r}
+duplicates |> 
+  dplyr::select(c(gene, SYMBOL, GENENAME))
+```
+
+```{r}
+duplicates |> 
+  distinct(gene) |> 
+  pull(gene)
+```
+
+```{r}
+all_cols <- expression_data |> 
   colnames()
 ```
 
 ```{r}
-all_cols
-```
-
-```{r}
-pca_data <- expression_data %>% 
+# Exclude augmented data columns that will not be used for PCA
+pca_data <- expression_data |> 
   dplyr::select(-one_of(c("log2_Lesion",
                           "log2_Perilesion",
                           "GENENAME",
@@ -33,8 +47,9 @@ pca_data <- expression_data %>%
                           "log2_expr_change",
                           "expr_diff",
                           "Sample",
-                          "SYMBOL"))) %>% 
-  mutate(Age = cut_interval(Age, length = 10)) %>% 
+                          "SYMBOL"))) |> 
+  # Convert age and BMI vars into categories
+  mutate(Age = cut_interval(Age, length = 10)) |> 
   mutate(BMI = case_when(BMI < 18.5 ~ 'Underweight',
                          18.5 <= BMI & BMI < 25 ~ 'Healthy weight',
                          25 <= BMI & BMI < 30 ~ 'Overweight',
@@ -43,10 +58,11 @@ pca_data <- expression_data %>%
 ```
 
 ```{r}
-pca_data <- pca_data %>% 
+# Wrangle the dataset into a wide format, with Tissue as a single column
+pca_data <- pca_data |> 
   pivot_longer(c("Lesion","Perilesion"),
                names_to = "Tissue",
-               values_to = "expr") %>% 
+               values_to = "expr") |> 
   pivot_wider(id_cols = c("Gender",
                           "Race",
                           "Smoker",
@@ -60,55 +76,79 @@ pca_data <- pca_data %>%
 ```
 
 ```{r}
-pca_fit <- pca_data %>% 
-  dplyr::select(starts_with('EN')) %>% # retain only numeric columns
-  scale() %>% # scale data
-  prcomp() # do PCA
+# perform PCA on gene expression data
+pca_fit <- pca_data |> 
+  dplyr::select(starts_with('EN')) |> 
+  scale() |> 
+  prcomp() 
 ```
 
 ```{r}
-PCA_plot <- pca_fit |> 
+# PCA score plot
+PCA_score <- pca_fit |> 
   augment(pca_data) |> 
   ggplot(aes(.fittedPC1, 
              .fittedPC2, 
              color = Tissue,
-             label = Race)) + 
-  geom_point(size = 1.5) +
-  labs(title = 'PCA of RNA-seq Data by Tissue Type',
-       x = 'PC1',
-       y = 'PC2',
-       color = 'Tissue type') +
+             #label = Race
+             )) + 
+  geom_point(size = 2.5) +
+  labs(title = 'PCA Score Plot of RNA-seq Data by Tissue Type',
+       x = 'PC 1',
+       y = 'PC 2',
+       color = 'Tissue') +
   # Adds sample labels
-  geom_text_repel(size = 2.5,
-                  min.segment.length = 0,
-                  segment.linetype = 4) + 
+  #geom_text_repel(size = 2.5,
+  #                min.segment.length = 0,
+  #                segment.linetype = 4) + 
   theme_minimal() +
   theme(plot.title = 
           element_text(hjust = 0.5,
                        vjust = 2,
                        face = 'bold'),
-        panel.grid.minor = element_blank()
+        panel.grid.minor = element_blank(),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14)
         ) 
 
-#ggsave("PCA.png", PCA_plot, path = "../pictures") 
+  ggsave("PCA_score.png", PCA_score, path = "../pictures") 
 
-  PCA_plot
+  PCA_score
 ```
 
 ```{r}
-pca_fit %>%
-  tidy(matrix = "eigenvalues")
-```
+# Figure for explained variance
+PCA_var <- pca_fit |>
+  tidy(matrix = "eigenvalues") |>
+  filter(PC <= 10) |>
+  ggplot(aes(PC, percent)) +
+  geom_col() +
+  scale_x_continuous(breaks = 1:10) +
+  scale_y_continuous(
+    labels = scales::percent_format(),
+    limits = c(0,1)
+    #expand = expansion(mult = c(0.12, 0.3))
+  ) +
+  geom_point(aes(
+      x = PC,
+      y = cumulative
+    ),
+    color = 'black') +
+  geom_line(aes(
+      x = PC,
+      y = cumulative
+    ),
+    linetype = 'dashed',
+    color = 'black')+
+  ylab('Variance Explained (%)')+
+  xlab('Principal Component')+
+  ggtitle("Individual and Cumulative variance explained by first 10 PC's")+
+  theme_minimal()+
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14))
 
-```{r}
-pca_fit %>%
-  tidy(matrix = "eigenvalues") %>%
-  ggplot(aes(PC, std.dev)) +
-  geom_col(fill = "#56B4E9", alpha = 0.8) +
-  scale_x_continuous(breaks = 1:34) +
-  #scale_y_continuous(
-  #  labels = scales::percent_format(),
-  #  expand = expansion(mult = c(0, 0.01))
-  #) +
-  theme_minimal()
+
+  ggsave("PCA_var.png", PCA_var, path = "../pictures") 
+  
+  PCA_var
 ```
