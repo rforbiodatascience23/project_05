@@ -24,12 +24,12 @@ Data from undefined A Hidradenitis Suppurativa Molecular Disease Signature Deriv
 
 ## Data Cleaning
 
-- Start with 58051 genes in the pool
-  - Remove gene if 0 expression for all patients (-6098)
-  - Remove gene if expression linear model coefficient not significant (p>0.05) (-51437)
-  - Remove gene if expression change < 3-fold between the diseased tissue groups (-29)
+- Start with <span style="color:red;">58051</span> genes in the pool
+  1. Remove gene if 0 expression for all patients (<span style="color:orange;">-6098</span>)
+  2. Remove gene if expression linear model coefficient not significant between diseased/healthy tissue (p>0.05) (<span style="color:orange;">-51437</span>)
+  3. Remove gene if expression change for all patients < 3-fold between the diseased/healthy tissue groups ( <span style="color:orange;">-29</span>)
   
-- 487 Genes remain for analysis
+- <span style="color:green;">487</span> genes advance to analysis rounds
 
 
 
