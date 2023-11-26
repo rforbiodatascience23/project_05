@@ -44,7 +44,7 @@ upreg_count <-
 downreg_count <- 
   arranged_data |>
   group_by(gene) |> 
-  # Only look at the upregulated genes
+  # Only look at the downregulated genes
   filter(any(expr_diff <= 1/3)) |> 
   dplyr::select(gene) |> 
   unique() |> 
@@ -60,7 +60,7 @@ gene_counts
 ## Chromosome distribution of upregulated genes
 
 ```{r}
-arranged_data |>
+chromosomal_dist_upreg <- arranged_data |>
   group_by(gene) |> 
   # Only look at the upregulated genes
   filter(any(expr_diff >= 3)) |> 
@@ -71,8 +71,8 @@ arranged_data |>
   coord_flip() +
   theme_minimal() +
   labs(title = 'Chromosomal distribution of upregulated genes',
-       x = 'Counts',
-       y = 'Chromosome') +
+       x = 'Chromosome',
+       y = 'n') +
   theme(plot.title = element_text(hjust = 0.5,
                                   vjust = 2,
                                   face = 'bold'),
@@ -82,14 +82,16 @@ arranged_data |>
                                     size = 0.5),
         axis.text = element_text(size = 10)
         )
+
+ggsave("chromosomal_dist_upreg.png", chromosomal_dist_upreg, path = "../pictures")
 ```
 
-## Chromosomal distribution of downregulated gene
+## Chromosomal distribution of downregulated genes
 
 ```{r}
-arranged_data |>
+chromosomal_dist_downreg <- arranged_data |>
   group_by(gene) |> 
-  # Only look at the upregulated genes
+  # Only look at the downregulated genes
   filter(any(expr_diff <= 1/3)) |> 
   ungroup() |> 
   # fct_rev is used to filp the CHR catagory
@@ -98,8 +100,8 @@ arranged_data |>
   coord_flip() +
   theme_minimal() +
   labs(title = 'Chromosomal distribution of downregulated genes',
-       x = 'Counts',
-       y = 'Chromosome') +
+       x = 'Chromosome',
+       y = 'n') +
   theme(plot.title = element_text(hjust = 0.5,
                                   vjust = 2,
                                   face = 'bold'),
@@ -109,4 +111,6 @@ arranged_data |>
                                     size = 0.5),
         axis.text = element_text(size = 10)
         )
+
+ggsave("chromosomal_dist_downreg.png", chromosomal_dist_downreg, path = "../pictures")
 ```
