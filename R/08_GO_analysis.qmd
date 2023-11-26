@@ -17,7 +17,7 @@ library(org.Hs.eg.db)
 expression_data <- read_tsv(gzfile('../data/augmented_meta_gene_table.tsv.gz'))
 ```
 
-## Gene Ontology analysis for genes with upregulated expression
+##  Gene Ontology analysis for genes with upregulated expression
 
 ```{r}
 upregulated <- 
@@ -35,13 +35,18 @@ upreg_GO_res <- enrichGO(gene = upregulated,
                    ont = 'BP') |>  
           as.data.frame()
 
+#upreg_GO_res <- 
+  #upreg_GO_res |> 
+   #mutate(short_description = ifelse(str_length(Description) > 20,
+   #                                paste0(str_sub(Description, 1, 20), "..."),
+   #                                Description))
+          
+#Use paste from tidyverse
 upreg_GO_res <- 
   upreg_GO_res |> 
    mutate(short_description = ifelse(str_length(Description) > 20,
-                                   paste0(str_sub(Description, 1, 20), "..."),
-                                   Description))
-          
-  
+                                   paste(str_sub(Description, 1, 20), "...", ""),
+                                   Description))  
 ```
 
 ```{r fig.height=12, fig.width = 8}
@@ -73,7 +78,7 @@ upreg_GO_res |>
 
 ```
 
-## Only for top 10 pathways
+## Only for top 20 pathways
 
 ```{r fig.height=10, fig.width = 6}
 
@@ -135,14 +140,20 @@ downreg_GO_res <- enrichGO(gene = downregulated,
                    ont = 'BP') |>  
           as.data.frame()
 
+#downreg_GO_res <- 
+ # downreg_GO_res |> 
+  # mutate(short_description = ifelse(str_length(Description) > 30,
+   #                                paste0(str_sub(Description, 1, 30), "..."),
+    #                               Description)) |> 
+ # mutate(short_description = str_wrap(short_description, 20))
+          
+#paste function from tidyverse
 downreg_GO_res <- 
   downreg_GO_res |> 
    mutate(short_description = ifelse(str_length(Description) > 30,
-                                   paste0(str_sub(Description, 1, 30), "..."),
+                                   paste(str_sub(Description, 1, 30), "...", ""),
                                    Description)) |> 
-  mutate(short_description = str_wrap(short_description, 20))
-          
-  
+  mutate(short_description = str_wrap(short_description, 20))  
 ```
 
 ```{r fig.height=10, fig.width = 6}
