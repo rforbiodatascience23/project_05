@@ -11,6 +11,12 @@ library(broom)
 ```
 
 ```{r}
+# Calculate the buffer size in bytes (19.7 MB) size of meta_gene_table
+buffer_size_in_bytes <- 19.7 * 1048576
+
+# Set the environment variable for vroom
+Sys.setenv(VROOM_CONNECTION_SIZE = buffer_size_in_bytes)
+
 # Loading the created dataset
 meta_gene_table = read_tsv("../data/meta_gene_table.tsv.gz")
 ```
