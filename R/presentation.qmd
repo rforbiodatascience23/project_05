@@ -8,7 +8,9 @@ editor: visual
 
 # Presentation Group 5
 
-## Loading the data
+## Introduction
+
+## Materials and Methods
 
 We read the data from GSE151243
 
@@ -20,13 +22,13 @@ gene_table <- read.table(path_gene, header = TRUE)
 meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 ```
 
-## Cleaning the data
+## Results
 
 How to add a picture from the pictures folder
 
 ![PCA plot for augmented data](../pictures/PCA_score.png)
 
-## Annotate the data (Augmentation)
+## Discussion
 
 When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like this:
 
