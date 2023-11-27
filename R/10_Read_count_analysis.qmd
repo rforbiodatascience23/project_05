@@ -37,15 +37,13 @@ raw_gene_count <- raw_data |>
 
 ```{r fig.height = 6.5, fig.width = 6.5 }
 #Extract the gene columns
-gene_cols <- 
-  raw_data |> 
+gene_cols <- raw_data |> 
   dplyr::select(starts_with('ENSG')) |> 
   colnames()
   
 #Factorizing the samples
-Sample_count <- 
-  raw_data |> 
-  pivot_longer(gene_cols, 
+Sample_count <- raw_data |> 
+  pivot_longer(all_of(gene_cols), 
                names_to = 'Gene', 
                values_to = 'Expression') |> 
   group_by(Sample) |> 
@@ -115,8 +113,7 @@ sig_gene_count <- augmented_data |>
   summarise()
 
 #Factorizing the samples
-augmented_counts <- 
-  augmented_data |> 
+augmented_counts <- augmented_data |> 
   pivot_longer(c(Lesion, Perilesion), 
                names_to = 'Tissue_type', 
                values_to = 'expr') |> 
