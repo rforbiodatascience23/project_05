@@ -83,8 +83,6 @@ mult_annotated_genes <-
 annotated_data <- 
   annotated_data |> 
   anti_join(mult_annotated_genes, by = 'gene') 
-
-annotated_data |> distinct(gene)
 ```
 
 ## Write annotated data as tsv
