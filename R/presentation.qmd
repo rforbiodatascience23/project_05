@@ -50,7 +50,7 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ## Annotation
 
-## Read Counts
+## Inconsistencies in the number of lesional and non-lesional reads per sample.
 
 ::: columns
 ::: {.column width="50%"}
@@ -61,6 +61,8 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 ![450 significant genes, 84523661 reads](../pictures/Read_count_significant.png)
 :::
 :::
+
+Some samples have more non-lesional reads, while some have more lesional reads. 
 
 ## Modeling analysis
 
