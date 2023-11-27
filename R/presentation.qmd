@@ -97,10 +97,10 @@ How to add a picture from the pictures folder
 
 ![](images/chromosomal_dist_downreg-01.png){fig-align="center" width="500"}
 
-## Read Counts of Raw genes
+## Read Counts are higher for Raw genes
 
 ![](images/Read_count_raw-01.png){fig-align="center" width="500"}
 
-## Read Counts of Significant genes
+## Some nonlesional samples have higher read counts of Significant genes
 
 ![](images/Read_count_significant-02.png){fig-align="center" width="500"}
