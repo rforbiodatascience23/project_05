@@ -177,6 +177,16 @@ sig_data <- meta_gene_table |>
 ```
 
 ```{r}
+model_estimates |>
+  left_join(model_data, by=join_by(gene)) |>
+  arrange(p.value) |>
+  slice_head(n = 1000) |>
+  ggplot(aes(x=gene, y=p.value, color=is_significant)) +
+  geom_point()
+  
+```
+
+```{r}
 # save the full modeled data before significant gene selection
 write_tsv(model_estimates, 
           file = gzfile("../data/gene_model_estimates.tsv.gz"))
