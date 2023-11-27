@@ -144,6 +144,7 @@ meanlog2_dist <-
     y = "Mean Log2 Expression Change"
   )
 
+meanlog2_dist
 # ggsave("../pictures/meanLog2_dist.png", meanlog2_dist)
 ```
 
@@ -151,6 +152,7 @@ meanlog2_dist <-
 arranged_merged_expr_gene_data <- merged_expr_gene_data |>
   arrange(mean_log2_expr_change) |> 
   dplyr::slice(c(1:50, (n()-49):n()))
+
 
 data_with_avg_log2 <- arranged_merged_expr_gene_data |> 
   pivot_wider(names_from = Tissue_type,
@@ -255,10 +257,14 @@ p3 <- p3 + theme(legend.position = "none")
 
 
 combined_plot <- (p1 | p2 | p3) + 
-                 plot_layout(ncol = 3, 
-                             widths = c(3, 1, 1), 
-                             guides = 'collect') & 
-                 theme(legend.position = "right")
+    plot_layout(ncol = 3, widths = c(3, 1, 1), guides = 'collect') +
+    plot_annotation(
+    title = "Gene Expression Heatmap of\nTop 25 Upregulated and Downregulated Genes") &
+    # The & is used as we want to apply theme to every plot
+    theme(legend.position = "right",
+    plot.title = element_text(hjust = 0.5,
+                              vjust = 2,
+                              face = 'bold'))
 
 combined_plot
 
