@@ -4,17 +4,22 @@ format: html
 editor: visual
 ---
 
+## Load Libraries
+
 ```{r}
 library(tidyverse)
 library(broom)
 library(patchwork)
 ```
 
+## Load data
+
 ```{r}
-# load data
 expression_data <- read_tsv(gzfile('../data/augmented_meta_gene_table.tsv.gz'))
 significans_data <- read_tsv(gzfile('../data/gene_model_estimates.tsv.gz'))
 ```
+
+## Define meta and gene columns
 
 ```{r}
 # lists of meta data columns and gene columns
@@ -26,11 +31,14 @@ meta_cols <- c('Sample',
                'Age',
                'BMI')
 
-
 gene_cols <- expression_data |> 
   dplyr::select(-all_of(meta_cols)) |> 
   colnames()  
 ```
+
+## Data preparation
+
+We reconstructed the **`Tissue_type`** column and calculated two new columns, **`mean_log2_expr`** and **`mean_log2_expr_change`**, for each gene. These columns represent the average values derived from all observations for the respective tissue type. This approach enabled us to compare gene expression levels between lesional and perilesional tissues more effectively. We then added the gene information by separate it from our original data and merging it back using **`full_join`** .
 
 ```{r}
 expr_diff_ranked_data <- expression_data |> 
@@ -49,7 +57,6 @@ expr_diff_ranked_data <- expression_data |>
                    expr_diff)) |>
   group_by(gene) |> 
   arrange(desc(log2_expr_change)) |> 
-  # Not sure if i should take the mean 
   ungroup() |> 
   group_by(Tissue_type, gene) |> 
   summarise(mean_log2_expr_change = mean(log2_expr_change),
@@ -57,7 +64,7 @@ expr_diff_ranked_data <- expression_data |>
   ungroup() |>
   # Sort by mean_log2_expr_change in descending order and get top 20
   arrange(desc(mean_log2_expr_change)) |> 
-  as.data.frame() 
+  as_data_frame() 
 
 ```
 
@@ -69,17 +76,9 @@ gene_info <- expression_data |>
                 GENENAME,
                 CHR) |> 
    distinct(gene, .keep_all = TRUE) |> 
-  as.data.frame()
+   as_data_frame()
 
 gene_info
-```
-
-```{r}
-# Merge information
-#merged_expr_gene_data <- expr_diff_ranked_data |> 
- # merge(gene_info, 
-  #      by.x = "gene", 
-   #     by.y = "gene")
 ```
 
 ```{r}
@@ -92,11 +91,6 @@ merged_expr_gene_data <- expr_diff_ranked_data |>
 ## Plot estimate and confidence interval found from lm
 
 ```{r fig.height = 8}
-
-#merged_sig_data <- significans_data |> 
-  #merge(gene_info, 
-        #by.x = 'gene',
-        #by.y = 'gene')
 
 #Using join
 merged_sig_data <- significans_data |> 
@@ -123,6 +117,8 @@ merged_sig_data |>
                                   face = 'bold')) 
 ```
 
+## Log2 expression distribution
+
 ```{r fig.width = 4, fig.height = 6}
 meanlog2_dist <- 
   merged_expr_gene_data |> 
@@ -148,6 +144,10 @@ meanlog2_dist
 # ggsave("../pictures/meanLog2_dist.png", meanlog2_dist)
 ```
 
+## Heatmap overview of gene expression change
+
+To effectively visualize the gene expression changes of the most significantly altered genes, we focused on creating a detailed heatmap. Initially, we selected data corresponding to the top 25 most upregulated and downregulated genes. Our heatmap was divided into three sections: 1) The mean log2 expression of Lesional and Perilesional tissue, 2) The mean log2 expression change, and 3) The average mean expression change. We then combined these three heatmaps into one cohesive visualization using the **`patchwork`** package. The genes were ordered based on the log2 expression change.
+
 ```{r}
 arranged_merged_expr_gene_data <- merged_expr_gene_data |>
   arrange(mean_log2_expr_change) |> 
@@ -159,6 +159,8 @@ data_with_avg_log2 <- arranged_merged_expr_gene_data |>
               values_from = mean_log2_expr) |> 
   mutate(avg_mean_log2_expr = (Lesion + Perilesion)/2)
 ```
+
+### Heatmap 1: mean log2 expression
 
 ```{r}
 midval1 <- arranged_merged_expr_gene_data |> 
@@ -188,6 +190,8 @@ p1 <- arranged_merged_expr_gene_data |>
     ) 
 p1
 ```
+
+### Heatmap 2: mean log2 expression change
 
 ```{r}
 midval2 <- arranged_merged_expr_gene_data|> 
@@ -219,6 +223,8 @@ p2 <- arranged_merged_expr_gene_data |>
 p2
 ```
 
+### Heatmap 3: average mean log2 expression
+
 ```{r}
 midpoint3 <- data_with_avg_log2 |> 
   summarize(median = median(avg_mean_log2_expr)) |> 
@@ -248,6 +254,8 @@ p3 <- data_with_avg_log2 |>
 p3
 ```
 
+### Combined Heatmap plot
+
 ```{r fig.width= 6, fig.height=10}
 p1 <- p1 + theme(legend.position = "none")
 
@@ -271,11 +279,13 @@ combined_plot
 # ggsave("../pictures/heatmap_overview.png", combined_plot)
 ```
 
-## Looking at the most upregulated and downregulated genes in the lesional samples compared to the perilesional
+## Heatmap of top 25 upregulated and downregulated genes
+
+For a closer examination, we focused on the top 25 genes that were most significantly upregulated and downregulated, exploring these through a heatmap.
 
 ```{r fig.width=5, fig.height=5}
 most_upreg <- arranged_merged_expr_gene_data |> 
-  slice_head(n = 40)
+  slice_head(n = 50)
 
 midval <- arranged_merged_expr_gene_data |> 
   summarize(median = median(mean_log2_expr)) |> 
@@ -292,7 +302,7 @@ heatmap_upreg <-
                        mid = 'white',
                        midpoint = midval) +
   labs(
-    title = 'Top 20 most downregulated genes',
+    title = 'Top 25 most downregulated genes',
     fill = 'log2 expression') + 
   theme_minimal() +
   theme(
@@ -300,18 +310,19 @@ heatmap_upreg <-
                               hjust = 0.5,
                               vjust = 2,
                               face = 'bold'),
-    panel.grid.major = element_blank(), # Remove major grid lines
-    panel.grid.minor = element_blank(), # Remove minor grid lines
-    axis.title.x = element_blank(), # Remove x-lable
-    axis.title.y = element_blank(), # Remove y-lable
-    axis.text.x = element_text(size = 10), # Adjust X-axis text size
-    axis.text.y = element_text(size = 10), # Adjust Y-axis text size
-    legend.title = element_text(size = 12), # Adjust color bar title size
-    legend.text = element_text(size = 10)  # Adjust color bar text size
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(), 
+    axis.text.x = element_text(size = 10), 
+    axis.text.y = element_text(size = 10), 
+    legend.title = element_text(size = 12), 
+    legend.text = element_text(size = 10)  
   ) +
   # Increase colorbar size
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
 
+heatmap_upreg
 ggsave("../pictures/heatmap_upreg.png", heatmap_upreg)
 ```
 
@@ -338,20 +349,24 @@ heatmap_downreg <-
                               hjust = 0.5,
                               vjust = 2,
                               face = 'bold'),
-    panel.grid.major = element_blank(), # Remove major grid lines
-    panel.grid.minor = element_blank(), # Remove minor grid lines
-    axis.title.x = element_blank(), # Remove x-lable
-    axis.title.y = element_blank(), # Remove y-lable
-    axis.text.x = element_text(size = 10), # Adjust X-axis text size
-    axis.text.y = element_text(size = 10), # Adjust Y-axis text size
-    legend.title = element_text(size = 12), # Adjust color bar title size
-    legend.text = element_text(size = 10)  # Adjust color bar text size
+    panel.grid.major = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    axis.title.x = element_blank(), 
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(size = 10), 
+    axis.text.y = element_text(size = 10), 
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)  
   ) +
   # Increase colorbar size
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
 
 ggsave("../pictures/heatmap_downreg.png", heatmap_downreg)
 ```
+
+## Boxplot visualisation of expression change
+
+The heatmap, while informative, wasn't sufficient for a detailed examination. We decided to create boxplots for the 20 most upregulated and downregulated genes. In these boxplots, the top and bottom points represent the log2 expression for each tissue type. The height of each box indicates the log2 fold change, providing a visual representation of expression differences. Additionally, we used color coding to illustrate the mean log2 expression change, adding another layer of insight into the gene expression dynamics.
 
 ```{r fig.width=10, fig.height=7}
 data_tot_with_avg_log2 <- merged_expr_gene_data |> 
@@ -411,6 +426,6 @@ combined_plot_2 <- (p4 | p5) +
                                                   vjust = 1),
                        axis.title.x = element_blank())
 
-ggsave("../pictures/boxplot_change.png")
 combined_plot_2
+ggsave("../pictures/boxplot_change.png")
 ```
