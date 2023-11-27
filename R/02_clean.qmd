@@ -229,10 +229,13 @@ model_estimates |>
             color="red") +
 # Bonferroni correction used on the data
   geom_hline(yintercept = -log10(0.05/nrow(model_estimates))) +
-  geom_vline(xintercept = -log2(3), linetype="dashed") +
-  geom_vline(xintercept = log2(3), linetype="dashed")
+  geom_vline(xintercept = -log2(3), 
+             linetype="dashed") +
+  geom_vline(xintercept = log2(3), 
+             linetype="dashed")
   
-ggsave("../pictures/volcano_plot_total.png", bg="white")
+ggsave("../pictures/volcano_plot_total.png", 
+       bg="white")
 ```
 
 ```{r}
