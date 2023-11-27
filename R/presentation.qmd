@@ -76,15 +76,15 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 :::
 :::
 
-## Chromosome Distribution of Upregulated genes
+## Chromosome Distribution
 
 ::: columns
 ::: {.column width="50%"}
-![](../pictures/chromosomal_dist_upreg.png){fig-align="center"}
+![](../pictures/chromosomal_dist_upreg.png)
 :::
 
 ::: {.column width="50%"}
-![](../pictures/chromosomal_dist_downreg.png){fig-align="center"}
+![](../pictures/chromosomal_dist_downreg.png)
 :::
 :::
 
@@ -108,13 +108,14 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
     -   **PHYHIP:** Fatty acid metabolism and perioxisomal function
 
 ## Gene Ontology Analysis
+
 ::: columns
 ::: {.column width="50%"}
 ![Enhanced Activation of Inflammatory, Innate and Adaptive immune pathway](../pictures/GO_upreg_top20.png)
 :::
 
 ::: {.column width="50%"}
-![](../pictures/GO_downreg_overview.png){fig-align="center"}
+![Reduced Keratinization and Intermediate filament activity](../pictures/GO_downreg_overview.png)
 :::
 :::
 
@@ -132,6 +133,3 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
     -   Adjusted P-value Cutoff Choices
     -   Gene Selection Criteria
         -   Focus only on protein-encoding genes
-
-
-
