@@ -30,11 +30,16 @@ At the end of the loading we want a dataframe which has already the desired shap
 ```{r}
 # output: FALSE
 # Pivoting the table and renaming the columns
+meta_colnames <- meta_table |>
+  dplyr::select(-X.Sample_title) |>
+  colnames()
+
 meta_table <- meta_table |>
   t() |>
-    as.data.frame()
-colnames(meta_table) <- gsub('!', '', meta_table[1,])
-meta_table <- meta_table[-1,]
+  as_data_frame() |>
+  row_to_names(row_number = 1) |>
+  clean_names() |>
+  mutate(Sample = meta_colnames)
 ```
 
 We have to clean the meta data as it is really dirty
@@ -42,10 +47,7 @@ We have to clean the meta data as it is really dirty
 ```{r}
 # Selecting and renaming the columns we are interested in
 meta_table <- meta_table |>
-  clean_names() |>
-  rownames_to_column(var = "Sample") |>
-  select(
-    c(
+  dplyr::select(
     Sample, 
     sample_characteristics_ch1,
     sample_characteristics_ch1_2,
@@ -54,25 +56,25 @@ meta_table <- meta_table |>
     sample_characteristics_ch1_5,
     sample_characteristics_ch1_6,
     sample_characteristics_ch1_7,
-    sample_characteristics_ch1_8)
+    sample_characteristics_ch1_8
   ) |>
-  rename(
-    all_of(c(Tissue = "sample_characteristics_ch1",
-    Tissue_type = "sample_characteristics_ch1_2",
-    Patient_id = "sample_characteristics_ch1_3",
-    Age = "sample_characteristics_ch1_4", 
-    Gender = "sample_characteristics_ch1_5",
-    Race = "sample_characteristics_ch1_6",
-    Smoker = "sample_characteristics_ch1_7",
-    BMI = "sample_characteristics_ch1_8"))
-  )
+  rename(all_of(
+    c(sample_characteristics_ch1 = "Tissue",
+    sample_characteristics_ch1_2 = "Tissue_type",
+    sample_characteristics_ch1_3 = "Patient_id",
+    sample_characteristics_ch1_4 = "Age", 
+    sample_characteristics_ch1_5 = "Gender",
+    sample_characteristics_ch1_6 = "Race",
+    sample_characteristics_ch1_7 = "Smoker",
+    sample_characteristics_ch1_8 = "BMI"))
+    )
+
 ```
 
 ```{r}
 # Tidy columns (with no prefixes)
 meta_table <- meta_table |>
   mutate(
-    Sample = str_split_i(Sample, pattern="_", 2),
     Tissue = gsub("tissue: ", "", Tissue),
     Tissue_type = gsub("tissue_type: ", "", Tissue_type),
     Patient_id = gsub("patient_id: ", "", Patient_id),
@@ -81,22 +83,29 @@ meta_table <- meta_table |>
     Race = gsub("race: ", "", Race),
     Smoker= gsub("smoker: ", "", Smoker),
     BMI= gsub("bmi: ", "", BMI),
+    Sample = str_split_i(Sample, pattern="_", 2),
   )
 ```
 
 ```{r}
 # Same operations we want genes as columns
+gene_columns <- gene_table |>
+  dplyr::select(-Sample) |>
+  colnames()
+
 gene_table <- gene_table |>
   t() |>
-    as.data.frame()
-colnames(gene_table) <- gene_table[1,]
-gene_table <- gene_table[-1,]
+  as_data_frame() |>
+  row_to_names(row_number = 1) |>
+  mutate(Sample = gene_columns,
+         across(starts_with("ENS"), ~as.numeric(.))
+         )
+  
 ```
 
 ```{r}
 # We change the Sample id and put it as a column
 gene_table <- gene_table |>
-  rownames_to_column(var = "Sample") |>
   mutate(
     Sample = str_split_i(Sample, pattern="_", 2)
   )

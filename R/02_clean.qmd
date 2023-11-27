@@ -98,7 +98,6 @@ meta_gene_table <- meta_gene_table |>
 Find number of genes before removing genes with non-significant change in expression
 
 ```{r}
- 
 gene_cols <- meta_gene_table |> 
   dplyr::select(starts_with('ENSG')) |> 
   colnames()
@@ -199,8 +198,7 @@ gene_cols <- sig_data |>
 
 ```{r}
 # Find gene count before filtering
-gene_number_unfiltred <- 
-  length(gene_cols)
+gene_number_unfiltred <- length(gene_cols)
 
 # Calculate the expression difference as expression level of Lesion/Perilesion
 gene_expr_diff <- sig_data |>
@@ -217,8 +215,8 @@ gene_expr_diff <- sig_data |>
               values_from = expr
               ) |> 
    # Add a little factor to avoid division with 0
-   mutate(Perilesion = Perilesion + 1e-6) |> 
-  mutate(expr_diff = (Lesion / Perilesion)) |> 
+  mutate(Perilesion = Perilesion + 1e-6, 
+         expr_diff = (Lesion / Perilesion)) |> 
   ungroup()
 
 # Using 2 filtering approaches
@@ -229,8 +227,7 @@ high_diff_strict <- gene_expr_diff |>
   group_by(gene) |> 
   filter(all(expr_diff >= 3) | all(expr_diff <= 1/3))
 
-high_diff_strict_gene <- 
-  high_diff_strict |> 
+high_diff_strict_gene <- high_diff_strict |> 
   distinct(gene) |> 
   pull(gene)
 
@@ -238,8 +235,7 @@ high_diff_lose <- gene_expr_diff |>
   group_by(gene) |> 
   filter(any(expr_diff >= 3) | any(expr_diff <= 1/3))
 
-high_diff_lose_gene <- 
-  high_diff_lose |> 
+high_diff_lose_gene <- high_diff_lose |> 
   distinct(gene) |> 
   pull(gene)
 
