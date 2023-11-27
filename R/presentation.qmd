@@ -105,6 +105,45 @@ A small relative change in expression implies that the gene is not significant (
 
 ## Annotation
 
+We want to retrieve the name of the genes we are analyzing (instead of the Ensemble names)
+
+We use the database **org.HS.eg.db** with the package **AnnotationDbi** (to manipulate the database)
+
+``` {.r code-line-numbers="1-12|13-19|21-32"}
+# Find the corresponding gene SYMBOL for all ENSEMBL in org.HS.eg.db 
+mapping <- AnnotationDbi::select(org.Hs.eg.db, 
+                                 keys = keys(org.Hs.eg.db, keytype = "ENSEMBL"),
+                                 keytype = "ENSEMBL",
+                                 columns = c("SYMBOL", "GENENAME", "CHR")
+                                ) |> 
+                  as_data_frame()
+
+# Use left_join from tidyverse
+annotated_data <- expression_data |> 
+  left_join(mapping, by = c('gene' = 'ENSEMBL'))
+
+no_annotation_genes <- annotated_data |> 
+  filter(is.na(SYMBOL)) 
+
+# Antijoin keep all element that is not in the no_annotation_genes
+annotated_data <- annotated_data |> 
+  anti_join(no_annotation_genes, 
+            by = 'gene')
+
+# Genes with multiple annotation would have more than 20 entrees
+duplicates <- annotated_data |> 
+  group_by(gene) |> 
+  filter(n() > 20) 
+
+mult_annotated_genes <- duplicates |>
+  dplyr::select(gene, SYMBOL, GENENAME) |> 
+  distinct() |> 
+  ungroup() 
+
+annotated_data <- annotated_data |> 
+  anti_join(mult_annotated_genes, by = 'gene') 
+```
+
 ## Inconsistencies in the number of lesional and non-lesional reads per sample.
 
 ::: columns
@@ -149,7 +188,7 @@ Interesting - No downregulated genes in the Y chromosome
 
 ![](../pictures/Heatmap_overview.png){fig-align="center"}
 
-## An other way to look at it
+## Another way to look at it
 
 ![](../pictures/boxplot_change.png){fig-align="center"}
 
