@@ -48,6 +48,8 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
     3.  Remove gene if expression change for all patients \< 3-fold between the diseased/healthy tissue groups ( [-29]{style="color:orange;"})
 -   [487]{style="color:green;"} genes advance to analysis rounds
 
+## Annotation
+
 ## Read Counts
 
 ::: columns
@@ -60,19 +62,7 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 :::
 :::
 
-## Chromosome Distribution of Upregulated genes
-
-::: columns
-::: {.column width="50%"}
-![](../pictures/chromosomal_dist_upreg.png){fig-align="center"}
-:::
-
-::: {.column width="50%"}
-![](../pictures/chromosomal_dist_downreg.png){fig-align="center"}
-:::
-:::
-
-## Results
+## Modeling analysis
 
 ## Principal Component Analysis
 
@@ -83,6 +73,18 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ::: {.column width="50%"}
 ![Variance Explained](../pictures/PCA_var.png)
+:::
+:::
+
+## Chromosome Distribution of Upregulated genes
+
+::: columns
+::: {.column width="50%"}
+![](../pictures/chromosomal_dist_upreg.png){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+![](../pictures/chromosomal_dist_downreg.png){fig-align="center"}
 :::
 :::
 
@@ -105,10 +107,10 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
     -   **CHRM1:** Muscarinic receptor
     -   **PHYHIP:** Fatty acid metabolism and perioxisomal function
 
-## Enhanced Activation of Inflammatory, Innate and Adaptive immune pathway
+## Gene Ontology Analysis
 ::: columns
 ::: {.column width="50%"}
-![](../pictures/GO_upreg_top20.png)
+![Enhanced Activation of Inflammatory, Innate and Adaptive immune pathway](../pictures/GO_upreg_top20.png)
 :::
 
 ::: {.column width="50%"}
