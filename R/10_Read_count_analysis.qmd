@@ -151,8 +151,8 @@ augmented_counts <-
                                     "22L", "22N")))
   
 reads_sig <- augmented_counts |> 
-  ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = "cyan")) +
-  geom_bar(stat = 'identity') +
+  ggplot(aes(x = fct_rev(Sample), y = Read_count)) +
+  geom_bar(stat = 'identity', fill = "#009E73") +
   coord_flip() +
   labs(title = 'Number of Reads of Significant Genes in Each Sample',
        x = 'Sample',
