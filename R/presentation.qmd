@@ -67,7 +67,7 @@ final_table <- meta_table |>
 
 -   Start with [58051]{style="color:red;"} genes in the pool
     1.  Remove gene if 0 expression for all patients ([-6098]{style="color:orange;"})
-    2.  Remove gene if expression linear model coefficient not significant between diseased/healthy tissue (p\>0.05) ([-51437]{style="color:orange;"})
+    2.  Remove gene if expression linear model coefficient not significant between diseased/healthy tissue (adj.p\>0.05) ([-51437]{style="color:orange;"})
     3.  Remove gene if expression change for all patients \< 3-fold between the diseased/healthy tissue groups ( [-29]{style="color:orange;"})
 -   [487]{style="color:green;"} genes advance to analysis rounds
 
