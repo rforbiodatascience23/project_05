@@ -63,6 +63,10 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ![](../pictures/Heatmap_overview.png){fig-align="center"}
 
+## An other way to look at it
+
+![Which genes are the most upregulated and downregulated](../pictures/boxplot_change.png)
+
 ## Functional Assessment of Upregulated and Downregulated Genes
 
 -   Upregulated genes:
