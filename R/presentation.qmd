@@ -14,10 +14,15 @@ editor: visual
 
 ## Introduction
 
-Hidradenitis suppurativa (HS) is a common, debilitating inflammatory skin disease linked to immune dysregulation and abnormalities in follicular structure and function. The study we looked at tries to derive an expression-based HS disease signature by observing affected and unaffected skin from 20 subjects and characterize a transcriptomic profile through RNASeq. Differential expression and pathway enrichment analyses were then performed, and the results were compared to previously reported datasets.
+-   Hidradenitis suppurativa (HS) - inflammatory skin disease linked to immune dysregulation and abnormalities in follicular structure and function.
 
-\
-We obtained the RNASeq data used for the study - A Hidradenitis Suppurativa Molecular Disease Signature Derived from Patient Samples by High-Throughput RNA Sequencing, available on GEO RNASeq results for 40 samples - and tried to replicate the differential expression profiling and pathway enrichment analyses.
+-   Data - Lesional and non-lesional skin samples from 20 patients
+
+-   Study objective - Find an expression-based disease signature of HS by observing affected and unaffected skin samples.
+
+-   Methods - Differential expression and pathway enrichment analyses.
+
+The dataset used for the study isn't particularly diverse - for instance, only 3 males were sampled, all of whom were either active or ex-smokers.
 
 ## Trace the Flow of the Project
 
@@ -43,7 +48,29 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
     3.  Remove gene if expression change for all patients \< 3-fold between the diseased/healthy tissue groups ( [-29]{style="color:orange;"})
 -   [487]{style="color:green;"} genes advance to analysis rounds
 
-## Materials and Methods
+## Read Counts
+
+::: columns
+::: {.column width="50%"}
+![](../pictures/Read_count_raw.png)
+:::
+
+::: {.column width="50%"}
+![](../pictures/Read_count_significant.png)
+:::
+:::
+
+## Chromosome Distribution of Upregulated genes
+
+::: columns
+::: {.column width="50%"}
+![](../pictures/chromosomal_dist_upreg.png){fig-align="center"}
+:::
+
+::: {.column width="50%"}
+![](../pictures/chromosomal_dist_downreg.png){fig-align="center"}
+:::
+:::
 
 ## Results
 
@@ -75,12 +102,15 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
     -   **PHYHIP:** Fatty acid metabolism and perioxisomal function
 
 ## Enhanced Activation of Inflammatory, Innate and Adaptive immune pathway
+::: columns
+::: {.column width="50%"}
+![](../pictures/GO_upreg_top20.png)
+:::
 
-![](../pictures/GO_upreg_top20.png){fig-align="center"}
-
-## Reduced Activity in Hair, Skin and Neural Cell Division Pathways
-
+::: {.column width="50%"}
 ![](../pictures/GO_downreg_overview.png){fig-align="center"}
+:::
+:::
 
 ## Discussion
 
@@ -97,22 +127,5 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
     -   Gene Selection Criteria
         -   Focus only on protein-encoding genes
 
-## Chromosome Distribution of Upregulated genes
 
-::: columns
-::: {.column width="50%"}
-![](../pictures/chromosomal_dist_upreg.png){fig-align="center"}
-:::
 
-::: {.column width="50%"}
-![](../pictures/chromosomal_dist_downreg.png){fig-align="center"}
-:::
-:::
-
-## Read Counts are higher for Raw genes
-
-![](../pictures/Read_count_raw.png){fig-align="center"}
-
-## Some nonlesional samples have higher read counts of Significant genes
-
-![](../pictures/Read_count_significant.png){fig-align="center"}
