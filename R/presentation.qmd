@@ -101,7 +101,12 @@ We can see on a **volcano plot** the correlation between expression change and s
 
 A small relative change in expression implies that the gene is not significant (Bonferonni correction)
 
+::: {.r-stack}
 ![](../pictures/volcano_plot.png){fig-align="center"}
+![](../pictures/volcano_plot_restricted.png){fig-align="center"}
+![](../pictures/volcano_plot_final.png){fig-align="center"}
+
+:::
 
 ## Principal Component Analysis
 
