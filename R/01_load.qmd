@@ -6,11 +6,15 @@ editor: visual
 
 ## Loading data
 
+We will use the package **janitor** (introduced in the R4DS2e book) in addition to the tidyverse as it will allow us to handle the duplicate names for the columns in the data)
+
 ```{r}
 # output: FALSE
 library(tidyverse)
 library(janitor)
 ```
+
+Loading the data from the **GSE151243** files available online on the [GEO Accession viewer](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151243), we are using the base function `read.table` as the data comport several blank spaces within the same column (making it therefore impossible to use `read_table` ) one other way to use **dplyr** instead of **base** would be to use `read_fwf` and specifying the index for each columns (therefore a vector of size 47), we therefore find it easier for the reader to use the base function for the beginning of the loading part.
 
 ```{r}
 # Loading the data
@@ -21,6 +25,8 @@ gene_table <- read.table(path_gene, header = TRUE)
 meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 ```
 
+At the end of the loading we want a dataframe which has already the desired shape, we choose to represent **each sample as a row** to match the definition of a tidy dataset, therefore the columns will be the different genes expressions (plus the metadata eventually)
+
 ```{r}
 # output: FALSE
 # Pivoting the table and renaming the columns
@@ -30,6 +36,8 @@ meta_table <- meta_table |>
 colnames(meta_table) <- gsub('!', '', meta_table[1,])
 meta_table <- meta_table[-1,]
 ```
+
+We have to clean the meta data as it is really dirty
 
 ```{r}
 # Selecting and renaming the columns we are interested in
@@ -94,6 +102,8 @@ gene_table <- gene_table |>
   )
 ```
 
+Here is the important operation of this first file, we are joining the two data frames (coming from gene data and meta data respectively) into a final dataframe where **each row is a sample with meta data and gene data**
+
 ```{r}
 # We join on patient ID
 final_table <- meta_table |>
@@ -103,6 +113,8 @@ final_table <- meta_table |>
   )
     
 ```
+
+We save it as a gz file for memory and efficiency purposes
 
 ```{r}
 # We save the corrected data frames at the end of this code
