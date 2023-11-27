@@ -66,8 +66,10 @@ chromosomal_dist_upreg <- arranged_data |>
   # Only look at the upregulated genes
   filter(any(expr_diff >= 3)) |> 
   ungroup() |> 
+  # emphasize sex chromosoms
+  mutate(sex_chromosom = ifelse((CHR == "X" | CHR == "Y"), 1, 0)) |>
   # fct_rev is used to filp the CHR catagory
-  ggplot(aes(fct_rev(CHR), fill = "grey")) +
+  ggplot(aes(fct_rev(CHR), fill = sex_chromosom)) +
   geom_bar() +
   coord_flip() +
   theme_minimal() +
@@ -84,6 +86,8 @@ chromosomal_dist_upreg <- arranged_data |>
         axis.text = element_text(size = 10)
         )
 
+chromosomal_dist_upreg
+
 ggsave("chromosomal_dist_upreg.png", 
        chromosomal_dist_upreg, 
        path = "../pictures", 
@@ -97,9 +101,11 @@ chromosomal_dist_downreg <- arranged_data |>
   group_by(gene) |> 
   # Only look at the downregulated genes
   filter(any(expr_diff <= 1/3)) |> 
-  ungroup() |> 
+  ungroup() |>  
+  # emphasize sex chromosoms
+  mutate(sex_chromosom = ifelse((CHR == "X" | CHR == "Y"), 1, 0)) |>
   # fct_rev is used to filp the CHR catagory
-  ggplot(aes(fct_rev(CHR), fill = "grey")) +
+  ggplot(aes(fct_rev(CHR), fill = sex_chromosom)) +
   geom_bar() +
   coord_flip() +
   theme_minimal() +
@@ -115,6 +121,8 @@ chromosomal_dist_downreg <- arranged_data |>
                                     size = 0.5),
         axis.text = element_text(size = 10)
         )
+
+chromosomal_dist_downreg
 
 ggsave("chromosomal_dist_downreg.png", 
        chromosomal_dist_downreg, 
