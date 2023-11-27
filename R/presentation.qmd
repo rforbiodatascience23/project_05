@@ -14,7 +14,10 @@ editor: visual
 
 ## Introduction
 
-Data from undefined A Hidradenitis Suppurativa Molecular Disease Signature Derived from Patient Samples by High-Throughput RNA Sequencing available on GEO RNASeq results for 40 samples.
+Hidradenitis suppurativa (HS) is a common, debilitating inflammatory skin disease linked to immune dysregulation and abnormalities in follicular structure and function. The study we looked at tries to derive an expression-based HS disease signature by observing affected and unaffected skin from 20 subjects and characterize a transcriptomic profile through RNASeq. Differential expression and pathway enrichment analyses were then performed, and the results were compared to previously reported datasets.
+
+\
+We obtained the RNASeq data used for the study - A Hidradenitis Suppurativa Molecular Disease Signature Derived from Patient Samples by High-Throughput RNA Sequencing, available on GEO RNASeq results for 40 samples - and tried to replicate the differential expression profiling and pathway enrichment analyses.
 
 ## Trace the Flow of the Project
 
