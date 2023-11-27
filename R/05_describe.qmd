@@ -81,7 +81,7 @@ wide_data |>
 ##  Smoking habits
 
 ```{r}
-# Change to this one
+# Grouping by gender and smoking history
 wide_data |>
   dplyr::filter(Tissue_type == "Lesion") |> 
   group_by(Smoker, Gender) |>
@@ -103,7 +103,7 @@ attribute_dist_table
 ```
 
 ```{r}
-# Creating agegroup
+# Creating age group
 
 attribute_dist_table <- 
   attribute_dist_table |>  
@@ -125,7 +125,7 @@ attribute_dist_table <-
 ```
 
 ```{r}
-# Write out catagories
+# Write out categories
 attribute_dist_table <- 
   attribute_dist_table |> 
   mutate(Gender = if_else(Gender == 'F',
