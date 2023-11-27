@@ -61,7 +61,6 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 ![450 significant genes, 84523661 reads](../pictures/Read_count_significant.png)
 :::
 :::
-
 Some samples have more non-lesional reads, while some have more lesional reads. 
 
 ## Modeling analysis
