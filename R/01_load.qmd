@@ -14,6 +14,7 @@ library(janitor)
 
 ```{r}
 # Loading the data
+# We are not using the dplyr function read_table as it cannot handle the blank spaces inside some columns
 path_gene = "../data/_raw/GSE151243_Raw_gene_counts_matrix.txt"
 path_meta = "../data/_raw/GSE151243_series_matrix.txt"
 gene_table <- read.table(path_gene, header = TRUE)
