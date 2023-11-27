@@ -9,6 +9,7 @@ library(tidyverse)
 ```
 
 ```{r}
+#Load in our significant genes that are either up or downregulated
 expression_data <- read_tsv(gzfile('../data/augmented_meta_gene_table.tsv.gz'))
 ```
 
