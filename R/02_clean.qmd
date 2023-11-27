@@ -36,9 +36,9 @@ meta_gene_table <- meta_gene_table |>
 
 ## Find columns containing missing values
 
-**Save yourself some time:** The result of this time-consuming analysis, is there are no columns containing missing values.
+**Save youself sometime:** the result of this time requiring analysis, is there are no columns containing missing values
 
-Count the number of missing values in each column.
+Count the number of missing value in each columns.
 
 ```{r}
 # Get the number of missing values
@@ -47,7 +47,7 @@ missing_values <- meta_gene_table |>
   summarise(across(everything(), ~ sum(is.na(.))))
 ```
 
-Find the names of columns that contain missing values.
+Find the names of columns that contained missing value.
 
 ```{r}
 # Checking if some columns have missing values
@@ -65,7 +65,7 @@ missing_values_t |>
 
 The result showed that no columns contained any missing values.
 
-##  Removes zero expression genes
+## Removes zero expression genes
 
 Find all the gene names, that have zero expression across all samples
 
@@ -85,7 +85,7 @@ zero_expression_genes <- meta_gene_table |>
 
 ```
 
-Remove genes with zero expression across all samples.
+Remove genes with zero_expression all across
 
 ```{r}
 # select non 0 expression genes from the data
@@ -93,9 +93,9 @@ meta_gene_table <- meta_gene_table |>
   dplyr::select(-all_of(zero_expression_genes))
 ```
 
-##  Removes genes with non-significant change in expression level (p=0.05)
+## Removes genes with non-significant change in expression level (p=0.05)
 
-Find number of genes before removing genes with non-significant change in expression between lesional and perilesional samples
+Find number of genes before removing genes with non-significant change in expression
 
 ```{r}
  
@@ -133,7 +133,7 @@ model_data <- meta_gene_table |>
          )
 ```
 
-Create a categorical variable that classifies genes with significant change in expression level. Genes with adj. p-val below 0.05 are categorized as significant.
+Create categorical variable that classifies genes with significant change in expression level. Genes with adj. p-val below 0.05 is categorized as significant.
 
 ```{r}
 # Unpack the models and adjust p-values for multiple comparisons
@@ -148,7 +148,7 @@ model_estimates <- model_data |>
                                       .default = 'yes') ) 
 ```
 
-Find the names and number of genes with significant change in expression
+Find the name and number of genes with significant change in expression
 
 ```{r}
 sig_genes <- model_estimates |> 
@@ -184,7 +184,7 @@ write_tsv(model_estimates,
           file = gzfile("../data/gene_model_estimates.tsv.gz"))
 ```
 
-##  Remove genes that are less than 3-fold up- or down regulated
+## Remove genes that are less than 3-fold up- or down regulated
 
 ```{r}
 gene_cols <- sig_data |> 
@@ -196,9 +196,9 @@ We now subset gene with at least 3-fold change in expression. We used 2 filterin
 
 -   **Strict** - where the gene must have 3-fold change across all sample.
 
--   **Loose** - the gene only need to have 3-fold change across 1 sample
+-   **Lose** - the gene only need to have 3-fold change across 1 sample
 
-We ended up with using the loose approach, as no genes satisfied the strict approach
+We ended up with using the lose approach, as no genes satisfied the strict approach
 
 ```{r}
 # Find count before filtering
@@ -255,7 +255,10 @@ filtering_res
 ```{r}
 # Applying filtering loss, and remove genes with less that 3-fold change in expression
 filtered_sig_data <- gene_expr_diff |> 
-  filter(gene %in% high_diff_lose) 
+  filter(gene %in% high_diff_lose)
+
+
+
 ```
 
 ```{r}
