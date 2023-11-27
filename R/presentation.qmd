@@ -111,6 +111,7 @@ Some samples have more non-lesional reads, while some have more lesional reads.
 ![](../pictures/chromosomal_dist_downreg.png)
 :::
 :::
+Interesting - No downregulated genes in the Y chromosome
 
 ## Most Upregulated and Downregulated Genes
 
