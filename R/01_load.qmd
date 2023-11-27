@@ -58,7 +58,7 @@ meta_table <- meta_table |>
     sample_characteristics_ch1_7,
     sample_characteristics_ch1_8
   ) |>
-  rename(all_of(
+  rename(dplyr::all_of(
     c(sample_characteristics_ch1 = "Tissue",
     sample_characteristics_ch1_2 = "Tissue_type",
     sample_characteristics_ch1_3 = "Patient_id",
