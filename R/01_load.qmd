@@ -59,14 +59,14 @@ meta_table <- meta_table |>
     sample_characteristics_ch1_8
   ) |>
   dplyr::rename(dplyr::all_of(
-    c(sample_characteristics_ch1 = "Tissue",
-    sample_characteristics_ch1_2 = "Tissue_type",
-    sample_characteristics_ch1_3 = "Patient_id",
-    sample_characteristics_ch1_4 = "Age", 
-    sample_characteristics_ch1_5 = "Gender",
-    sample_characteristics_ch1_6 = "Race",
-    sample_characteristics_ch1_7 = "Smoker",
-    sample_characteristics_ch1_8 = "BMI"))
+    c(Tissue = "sample_characteristics_ch1",
+    Tissue_type = "sample_characteristics_ch1_2",
+    Patient_id = "sample_characteristics_ch1_3",
+    Age = "sample_characteristics_ch1_4", 
+    Gender = "sample_characteristics_ch1_5",
+    Race = "sample_characteristics_ch1_6",
+    Smoker = "sample_characteristics_ch1_7",
+    BMI = "sample_characteristics_ch1_8"))
     )
 
 ```
