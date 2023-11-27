@@ -183,7 +183,6 @@ write_tsv(model_estimates,
           file = gzfile("../data/gene_model_estimates.tsv.gz"))
 ```
 
-
 We now subset gene with at least 3-fold change in expression. We used 2 filtering approaches:
 
 -   **Strict** - where the gene must have 3-fold change across all samples.

@@ -54,11 +54,11 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ::: columns
 ::: {.column width="50%"}
-![](../pictures/Read_count_raw.png)
+![58051 genes in total, 1855264316 reads](../pictures/Read_count_raw.png)
 :::
 
 ::: {.column width="50%"}
-![](../pictures/Read_count_significant.png)
+![450 significant genes, 84523661 reads](../pictures/Read_count_significant.png)
 :::
 :::
 

@@ -25,6 +25,15 @@ raw_data <- read_tsv(gzfile('../data/meta_gene_table.tsv.gz'))
 **Missing make levels**
 
 ```{r}
+raw_gene_count <- raw_data |> 
+  pivot_longer(gene_cols, 
+               names_to = 'Gene', 
+               values_to = 'Expression') |> 
+  group_by(Gene) |> 
+  summarise()
+```
+
+```{r}
 gene_cols <- 
   raw_data |> 
   dplyr::select(starts_with('ENSG')) |> 
@@ -80,7 +89,13 @@ reads <- Sample_count |>
                                     size = 0.5),
         legend.position = 'none')
 
+reads
 ggsave(filename = "Read_count_raw.png", reads, path = "../pictures", bg = "white")
+```
+
+```{r}
+Total_raw_reads <- Sample_count |> 
+  summarise(Total= sum(Read_count))
 ```
 
 ```{r}
@@ -88,6 +103,10 @@ augmented_data <- read_tsv('../data/augmented_meta_gene_table.tsv.gz')
 ```
 
 ```{r}
+sig_gene_count <- augmented_data |> 
+  group_by(gene) |> 
+  summarise()
+
 augmented_counts <- 
   augmented_data |> 
   pivot_longer(c(Lesion, Perilesion), 
@@ -139,6 +158,12 @@ reads_sig <- augmented_counts |>
                                     size = 0.5),
         legend.position = 'none')
 
+reads_sig
 ggsave("Read_count_significant.png", reads_sig, path = "../pictures", bg = "white")
 
+```
+
+```{r}
+Total_sig_reads <- augmented_counts |> 
+  summarise(Total = sum(Read_count))
 ```
