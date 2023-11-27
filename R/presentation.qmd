@@ -37,12 +37,11 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ## Data Cleaning
 
-- Start with <span style="color:red;">58051</span> genes in the pool
-  1. Remove gene if 0 expression for all patients (<span style="color:orange;">-6098</span>)
-  2. Remove gene if expression linear model coefficient not significant between diseased/healthy tissue (p>0.05) (<span style="color:orange;">-51437</span>)
-  3. Remove gene if expression change for all patients < 3-fold between the diseased/healthy tissue groups ( <span style="color:orange;">-29</span>)
-
-- <span style="color:green;">487</span> genes advance to analysis rounds
+-   Start with [58051]{style="color:red;"} genes in the pool
+    1.  Remove gene if 0 expression for all patients ([-6098]{style="color:orange;"})
+    2.  Remove gene if expression linear model coefficient not significant between diseased/healthy tissue (p\>0.05) ([-51437]{style="color:orange;"})
+    3.  Remove gene if expression change for all patients \< 3-fold between the diseased/healthy tissue groups ( [-29]{style="color:orange;"})
+-   [487]{style="color:green;"} genes advance to analysis rounds
 
 ## Materials and Methods
 
@@ -50,21 +49,15 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ## Principal Component Analysis
 
-:::: {.columns}
-
-
+::: columns
 ::: {.column width="50%"}
 ![Score Plot](../pictures/PCA_score.png)
 :::
 
-
 ::: {.column width="50%"}
-
-
 ![Variance Explained](../pictures/PCA_var.png)
-
 :::
-::::
+:::
 
 ## Most Upregulated and Downregulated Genes
 
@@ -106,16 +99,16 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ## Chromosome Distribution of Upregulated genes
 
-![](images/chromosomal_dist_upreg-01.png){fig-align="center" width="500"}
+![](../pictures/chromosomal_dist_upreg.png){fig-align="center"}
 
 ## Chromosome Distribution of Downregulated genes
 
-![](images/chromosomal_dist_downreg-01.png){fig-align="center" width="500"}
+![](../pictures/chromosomal_dist_downreg.png){fig-align="center"}
 
 ## Read Counts are higher for Raw genes
 
-![](images/Read_count_raw-01.png){fig-align="center" width="500"}
+![](../pictures/Read_count_raw.png){fig-align="center"}
 
 ## Some nonlesional samples have higher read counts of Significant genes
 
-![](images/Read_count_significant-02.png){fig-align="center" width="500"}
+![](../pictures/Read_count_significant.png){fig-align="center"}
