@@ -188,18 +188,51 @@ fc_change <- meta_gene_table |>
      pivot_wider(names_from=Tissue_type, values_from=Expression) |>
     mutate(FC_change = Lesion/Perilesion)
 
+sig_volcano <- model_estimates |>
+  left_join(fc_change, by=join_by(gene)) |>
+  filter(is_significant == "yes")
+
 model_estimates |>
   left_join(fc_change, by=join_by(gene)) |>
   filter(log2(FC_change)>-5 & log2(FC_change)<5) |>
-  sample_n(size=2000) |>
   ggplot(aes(x=log2(FC_change), y=-log10(p.value), color=is_significant)) +
-  geom_point() +
+  geom_point(aes(x=log2(FC_change), y=-log10(p.value)), 
+             color="grey", 
+             alpha=0.5) +
+  geom_point(data = sig_volcano,
+             aes(x=log2(FC_change), y=-log10(p.value)), 
+             color="red")
 # Bonferroni correction used on the data
-  geom_hline(yintercept = -log10(0.05/nrow(model_estimates))) +
-  scale_color_manual(values = c("grey","red"))
+  geom_hline(yintercept = -log10(0.05/nrow(model_estimates)))
   
 ggsave("../pictures/volcano_plot.png", bg="white")
   
+```
+
+```{r}
+# Putting the whole dataset on the volcano plot + the filter for low expression difference
+
+selected <- model_estimates |>
+  left_join(fc_change, by=join_by(gene)) |>
+  filter((log2(FC_change) < -log2(3) | log2(FC_change) > log2(3)) 
+         & is_significant == "yes")
+
+model_estimates |>
+  left_join(fc_change, by=join_by(gene)) |>
+  filter(log2(FC_change)>-5 & log2(FC_change)<5) |>
+  ggplot() +
+  geom_point(aes(x=log2(FC_change), y=-log10(p.value)), 
+                 color="grey", 
+                 alpha=0.5) +
+  geom_point(data=selected, 
+            aes(x=log2(FC_change), y=-log10(p.value)), 
+            color="red") +
+# Bonferroni correction used on the data
+  geom_hline(yintercept = -log10(0.05/nrow(model_estimates))) +
+  geom_vline(xintercept = -log2(3), linetype="dashed") +
+  geom_vline(xintercept = log2(3), linetype="dashed")
+  
+ggsave("../pictures/volcano_plot_total.png", bg="white")
 ```
 
 ```{r}
