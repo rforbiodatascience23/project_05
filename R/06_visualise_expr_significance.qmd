@@ -114,7 +114,14 @@ merged_sig_data |>
   labs(caption = '..') +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5,
-                                  face = 'bold')) 
+                                  face = 'bold'),
+    axis.title.y = element_blank(),
+    axis.text.x = element_text(size = 10), 
+    axis.text.y = element_text(size = 10), 
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)  
+  )
+  
 ggsave("../pictures/associations_genes.png")
 ```
 
