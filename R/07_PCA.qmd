@@ -12,24 +12,8 @@ library(broom)
 ```
 
 ```{r}
+# Load augmented data for PCA analysis
 expression_data <- read_tsv(gzfile('../data/augmented_meta_gene_table.tsv.gz'))
-```
-
-```{r}
-duplicates <- expression_data |> 
-  group_by(gene) |> 
-  filter(n() > 20)
-```
-
-```{r}
-duplicates |> 
-  dplyr::select(c(gene, SYMBOL, GENENAME))
-```
-
-```{r}
-duplicates |> 
-  distinct(gene) |> 
-  pull(gene)
 ```
 
 ```{r}
@@ -38,7 +22,7 @@ all_cols <- expression_data |>
 ```
 
 ```{r}
-# Exclude augmented data columns that will not be used for PCA
+# Exclude data columns that will not be used for PCA
 pca_data <- expression_data |> 
   dplyr::select(-one_of(c("log2_Lesion",
                           "log2_Perilesion",
