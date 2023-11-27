@@ -21,7 +21,7 @@ We obtained the RNASeq data used for the study - A Hidradenitis Suppurativa Mole
 
 ## Trace the Flow of the Project
 
-![](../pictures/flowchart_cut.png){fig-align="center"}
+![](../pictures/flowchart.bmp){fig-align="center"}
 
 ## Load
 
