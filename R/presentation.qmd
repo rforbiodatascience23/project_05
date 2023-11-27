@@ -73,17 +73,18 @@ final_table <- meta_table |>
 
 ## Annotation
 
-## Read Counts
+## Inconsistencies in the number of lesional and non-lesional reads per sample.
 
 ::: columns
 ::: {.column width="50%"}
-![](../pictures/Read_count_raw.png)
+![58051 genes in total, 1855264316 reads](../pictures/Read_count_raw.png)
 :::
 
 ::: {.column width="50%"}
-![](../pictures/Read_count_significant.png)
+![450 significant genes, 84523661 reads](../pictures/Read_count_significant.png)
 :::
 :::
+Some samples have more non-lesional reads, while some have more lesional reads. 
 
 ## Modeling analysis
 

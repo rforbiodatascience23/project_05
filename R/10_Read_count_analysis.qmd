@@ -25,6 +25,15 @@ raw_data <- read_tsv(gzfile('../data/meta_gene_table.tsv.gz'))
 **Missing make levels**
 
 ```{r}
+raw_gene_count <- raw_data |> 
+  pivot_longer(gene_cols, 
+               names_to = 'Gene', 
+               values_to = 'Expression') |> 
+  group_by(Gene) |> 
+  summarise()
+```
+
+```{r fig.height = 6.5, fig.width = 6.5 }
 gene_cols <- 
   raw_data |> 
   dplyr::select(starts_with('ENSG')) |> 
@@ -68,7 +77,7 @@ reads <- Sample_count |>
   ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = "cyan")) +
   geom_bar(stat = 'identity') +
   coord_flip() +
-  labs(title = 'Number of Reads in Each Sample',
+  labs(title = 'Number of Raw Reads in Each Sample',
        x = 'Sample',
        y = 'Number of reads') +
   theme_minimal() +
@@ -80,14 +89,24 @@ reads <- Sample_count |>
                                     size = 0.5),
         legend.position = 'none')
 
+reads
 ggsave(filename = "Read_count_raw.png", reads, path = "../pictures", bg = "white")
+```
+
+```{r}
+Total_raw_reads <- Sample_count |> 
+  summarise(Total= sum(Read_count))
 ```
 
 ```{r}
 augmented_data <- read_tsv('../data/augmented_meta_gene_table.tsv.gz')
 ```
 
-```{r}
+```{r fig.height = 6.5, fig.width = 6.5}
+sig_gene_count <- augmented_data |> 
+  group_by(gene) |> 
+  summarise()
+
 augmented_counts <- 
   augmented_data |> 
   pivot_longer(c(Lesion, Perilesion), 
@@ -127,7 +146,7 @@ reads_sig <- augmented_counts |>
   ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = "cyan")) +
   geom_bar(stat = 'identity') +
   coord_flip() +
-  labs(title = 'Number of Significant gene reads in Each Sample',
+  labs(title = 'Number of Reads of Significant Genes in Each Sample',
        x = 'Sample',
        y = 'Number of reads') +
   theme_minimal() +
@@ -139,6 +158,12 @@ reads_sig <- augmented_counts |>
                                     size = 0.5),
         legend.position = 'none')
 
+reads_sig
 ggsave("Read_count_significant.png", reads_sig, path = "../pictures", bg = "white")
 
+```
+
+```{r}
+Total_sig_reads <- augmented_counts |> 
+  summarise(Total = sum(Read_count))
 ```
