@@ -124,7 +124,8 @@ merged_sig_data |>
 ```
 
 ```{r fig.width = 4, fig.height = 6}
-merged_expr_gene_data |> 
+meanlog2_dist <- 
+  merged_expr_gene_data |> 
   ggplot(aes(y = mean_log2_expr_change, x = 0)) +
   geom_violin(fill = 'red', alpha = 0.5, adjust = 0.5, width = 0.5) +
   theme_minimal() +
@@ -143,6 +144,7 @@ merged_expr_gene_data |>
     y = "Mean Log2 Expression Change"
   )
 
+# ggsave("../pictures/meanLog2_dist.png", meanlog2_dist)
 ```
 
 ```{r}
@@ -181,10 +183,7 @@ p1 <- arranged_merged_expr_gene_data |>
     axis.text.x = element_text(size = 10), 
     axis.text.y = element_blank(),
     legend.title = element_text(size = 12), 
-    legend.text = element_text(size = 10),  
-    ) +
-  # Increase colorbar size
-  guides(fill = guide_colourbar(barwidth = 1, barheight = 7))
+    ) 
 p1
 ```
 
@@ -247,10 +246,6 @@ p3 <- data_with_avg_log2 |>
 p3
 ```
 
-**Note:** Somebody please look through it. I have no idea, why the mean_log2_change and avg_mean_log2_expr are both below 0
-
-\--It is no longer below 0
-
 ```{r fig.width= 6, fig.height=10}
 p1 <- p1 + theme(legend.position = "none")
 
@@ -267,7 +262,7 @@ combined_plot <- (p1 | p2 | p3) +
 
 combined_plot
 
-ggsave("../pictures/heatmap_overview.png", combined_plot)
+# ggsave("../pictures/heatmap_overview.png", combined_plot)
 ```
 
 ## Looking at the most upregulated and downregulated genes in the lesional samples compared to the perilesional
