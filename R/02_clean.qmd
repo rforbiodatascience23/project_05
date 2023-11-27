@@ -209,7 +209,7 @@ ggsave("../pictures/volcano_plot.png", bg="white")
 ```
 
 ```{r}
-# Putting the whole dataset on the volcano plot + the filter for low expression difference
+# Showing how we could select the interesting genes (with condition on the average change expression)
 
 selected <- model_estimates |>
   left_join(fc_change, by=join_by(gene)) |>
@@ -316,6 +316,7 @@ filtered_sig_data <- gene_expr_diff |>
 ```
 
 ```{r}
+# Showing our final dataset on a volcano plot
 selected_final_volcano <- filtered_sig_data |>
   left_join(fc_change, by=join_by(gene)) |>
   left_join(model_estimates, by=join_by(gene))
