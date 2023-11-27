@@ -100,7 +100,7 @@ Some samples have more non-lesional reads, while some have more lesional reads.
 :::
 :::
 
-## Chromosome Distribution
+## Certain chromosomes have more genes involved in immune activity
 
 ::: columns
 ::: {.column width="50%"}
