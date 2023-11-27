@@ -18,7 +18,7 @@ quarto::quarto_render("./06_visualise_expr_significance.qmd")
 quarto::quarto_render("./07_PCA.qmd") 
 quarto::quarto_render("./08_GO_analysis.qmd")
 quarto::quarto_render("./09_Chromosomal_distribution.qmd") 
-quarto::quarto_render("./10_Raw count analysis.qmd") 
+quarto::quarto_render("./10_Read_count_analysis.qmd") 
 quarto::quarto_render("./presentation.qmd")
 
 ```
