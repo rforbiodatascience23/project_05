@@ -13,13 +13,14 @@ library(org.Hs.eg.db)
 ```
 
 ```{r}
+# Load data for annotation
 expression_data <- read_tsv(gzfile("../data/cleaned_meta_gene_table.tsv.gz"))
 ```
 
 ## Annotation of genes
 
 ```{r}
-# Find the corresponding SYMBOL for all ENSEMBL in org.HS.eg.db 
+# Find the corresponding gene SYMBOL for all ENSEMBL in org.HS.eg.db 
 mapping <- AnnotationDbi::select(org.Hs.eg.db, 
                                  keys = keys(org.Hs.eg.db, keytype = "ENSEMBL"),
                                  keytype = "ENSEMBL",
@@ -30,10 +31,6 @@ mapping <- AnnotationDbi::select(org.Hs.eg.db,
                            ) |> 
                   as.data.frame()
 
-#annotated_data <- 
-#  expression_data |> 
-#  merge(mapping, by.x = 'gene', by.y = 'ENSEMBL')
-
 # Use left_join from tidyverse
 annotated_data <- 
   expression_data |> 
@@ -42,7 +39,7 @@ annotated_data <-
 ```
 
 ```{r}
-# 32 genes do not have annotation, we will just remove those genes
+# 32 genes do not have annotations, we will just remove those genes
 
 no_annotation_genes <- 
   annotated_data |> 
@@ -54,7 +51,7 @@ annotated_data <-
 ```
 
 ```{r}
-# 3 genes have multiple annotatio. We here delete those genes from our data, 
+# 3 genes have multiple annotations. We here delete those genes from our data, 
 # as it is difficult to say which annotation is more correct
 
 duplicates <- 
@@ -75,5 +72,6 @@ annotated_data <-
 ```
 
 ```{r}
+# save the final annotated gene expression data
 write_tsv(annotated_data, gzfile('../data/annotated_meta_gene_table.tsv.gz'))
 ```
