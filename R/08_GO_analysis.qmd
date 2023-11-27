@@ -116,7 +116,7 @@ upreg_top20 <- upreg_GO_res |>
         ) +
   coord_flip()  # Flip coordinates to make the bars horizontal
 
-ggsave("../pictures/GO_upreg_top.png", upreg_top20)
+ggsave("../pictures/GO_upreg_top20.png", upreg_top20)
 ```
 
 ## Gene Ontology analysis for downregulated gene

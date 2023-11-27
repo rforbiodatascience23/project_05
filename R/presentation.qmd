@@ -46,17 +46,28 @@ How to add a picture from the pictures folder
 
 ![PCA plot for augmented data](../pictures/PCA_score.png)
 
-## Heatmap
+## Most Upregulated and Downregulated Genes
 
-![](images/Heatmap_overview.png)
+![](../pictures/Heatmap_overview.png){fig-align="center"}
 
-## GO Analysis: Enhanced Activation of Inflammatory, Innate and Adaptive immune pathway 
+## Functional Assessment of Upregulated and Downregulated Genes
 
-![](images/GO_upreg_top20.png){fig-align="center"}
+-   Upregulated genes:
+    -   **NTRK1:** Neuronal survival and Signal Transduction\\n(MAPK, PI3K-Akt, PLC-$\gamma$)
+    -   **POU2AF1:** B-Cell immune responds
+    -   **SIGLEC7:** Inhibition of NK-Cell responds
+-   Downregulated genes:
+    -   **KRT77:** Kreatin, Intermediate filament protein
+    -   **CHRM1:** Muscarinic receptor
+    -   **PHYHIP:** Fatty acid metabolism and perioxisomal function
 
-## GO Analysis: Reduced Activity in Hair, Skin and Neural Cell Division Pathways
+## Enhanced Activation of Inflammatory, Innate and Adaptive immune pathway
 
-![](images/GO_downreg_overview.png){fig-align="center"}
+![](../pictures/GO_upreg_top20.png){fig-align="center"}
+
+## Reduced Activity in Hair, Skin and Neural Cell Division Pathways
+
+![](../pictures/GO_downreg_overview.png){fig-align="center"}
 
 ## Discussion
 
