@@ -393,12 +393,14 @@ p4 <- data_tot_with_avg_log2 |>
              upper=Perilesion,
              fill=mean_log2_expr_change,
              x=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
-  labs(title = "Upregulated genes") +
+  ggtitle("Upregulated genes") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   geom_boxplot(stat="identity")  +
   scale_fill_gradient2(low = 'blue', 
                        high = 'red', 
                        mid = 'white',
-                       midpoint = midval)
+                       midpoint = midval) +
+  ylim(-1, 20)
 
 p5 <- data_tot_with_avg_log2 |> 
   filter(regulated=="Downregulated") |>
@@ -409,12 +411,14 @@ p5 <- data_tot_with_avg_log2 |>
            upper=Perilesion,
            fill=mean_log2_expr_change,
            x=fct_reorder(SYMBOL.y, avg_mean_log2_expr))) +
-  labs(title = "Downregulated genes") +
+  ggtitle("Downregulated genes") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   geom_boxplot(stat="identity")  +
   scale_fill_gradient2(low = 'blue', 
                      high = 'red', 
                      mid = 'white',
-                     midpoint = midval)
+                     midpoint = midval) +
+  ylim(-1, 20)
 
 combined_plot_2 <- (p4 | p5) + 
                  plot_layout(ncol = 2, 
@@ -424,7 +428,7 @@ combined_plot_2 <- (p4 | p5) +
                  theme(axis.text.x = element_text(angle = 45,
                                                   hjust = 1,
                                                   vjust = 1),
-                       axis.title.x = element_blank())
+                       axis.title.x = element_blank()) 
 
 combined_plot_2
 ggsave("../pictures/boxplot_change.png")
