@@ -30,7 +30,7 @@ The dataset used for the study isn't particularly diverse - for instance, only 3
 
 ## Load
 
-![](../pictures/dirty_dataset.png)
+![](../pictures/dirty_dataset.png){fig-align="center"}
 
 We have **two different files** from the **Gene Expression Omnibus** (GEO), one containing the metadata and the other the raw gene counts from the RNAseq.
 
@@ -61,7 +61,7 @@ final_table <- meta_table |>
   )
 ```
 
-![](../pictures/tidy_dataset.png)
+![](../pictures/tidy_dataset.png){fig-align="center"}
 
 ## Data Cleaning
 
@@ -93,7 +93,15 @@ Linear regression on a binary value (perilesion or lesion) we want to see which 
 
 Many **collagens in the most upregulated genes**
 
-![](../pictures/associations_genes.png)
+![](../pictures/associations_genes.png){fig-align="center"}
+
+## Volcano plot
+
+We can see on a **volcano plot** the correlation between expression change and significance
+
+A small relative change in expression implies that the gene is not significant (Bonferonni correction)
+
+![](../pictures/volcano_plot.png){fig-align="center"}
 
 ## Principal Component Analysis
 
@@ -127,7 +135,7 @@ Interesting - No downregulated genes in the Y chromosome
 
 ## An other way to look at it
 
-![Which genes are the most upregulated and downregulated](../pictures/boxplot_change.png)
+![](../pictures/boxplot_change.png){fig-align="center"}
 
 ## Functional Assessment of Upregulated and Downregulated Genes
 
