@@ -17,14 +17,16 @@ Sys.setenv(VROOM_CONNECTION_SIZE = buffer_size_in_bytes)
 ```
 
 ```{r}
+#Load in our raw data
 raw_data <- read_tsv(gzfile('../data/meta_gene_table.tsv.gz'))
 ```
 
-## Count for each sample
+## Read counts for each sample
 
-**Missing make levels**
+A comparison of read counts between our significant and all of our genes can give us an idea about the differing sequencing depths, which can potentially color our analysis. Comparing the number of reads of different samples also gives us an idea about the inherent bias that might be present in our data - expression signals from samples having a greater sequencing depth might dominate.
 
 ```{r}
+#Calculate total number of genes in raw data
 raw_gene_count <- raw_data |> 
   pivot_longer(gene_cols, 
                names_to = 'Gene', 
@@ -34,12 +36,13 @@ raw_gene_count <- raw_data |>
 ```
 
 ```{r fig.height = 6.5, fig.width = 6.5 }
+#Extract the gene columns
 gene_cols <- 
   raw_data |> 
   dplyr::select(starts_with('ENSG')) |> 
   colnames()
   
-
+#Factorizing the samples
 Sample_count <- 
   raw_data |> 
   pivot_longer(gene_cols, 
@@ -94,19 +97,24 @@ ggsave(filename = "Read_count_raw.png", reads, path = "../pictures", bg = "white
 ```
 
 ```{r}
+#Total number of reads for all genes in raw data
 Total_raw_reads <- Sample_count |> 
   summarise(Total= sum(Read_count))
 ```
 
 ```{r}
+#Load in our significant genes
 augmented_data <- read_tsv('../data/augmented_meta_gene_table.tsv.gz')
 ```
 
 ```{r fig.height = 6.5, fig.width = 6.5}
+
+#Count the number of significant genes
 sig_gene_count <- augmented_data |> 
   group_by(gene) |> 
   summarise()
 
+#Factorizing the samples
 augmented_counts <- 
   augmented_data |> 
   pivot_longer(c(Lesion, Perilesion), 
@@ -164,6 +172,7 @@ ggsave("Read_count_significant.png", reads_sig, path = "../pictures", bg = "whit
 ```
 
 ```{r}
+#Counting total number of reads of our significant genes
 Total_sig_reads <- augmented_counts |> 
   summarise(Total = sum(Read_count))
 ```
