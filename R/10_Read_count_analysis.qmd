@@ -56,7 +56,7 @@ Sample_count <-
          ))
 
 
-Sample_count |> 
+reads <- Sample_count |> 
   ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = Sample)) +
   geom_bar(stat = 'identity') +
   coord_flip() +
@@ -71,6 +71,8 @@ Sample_count |>
                                     fill = 'transparent',
                                     size = 0.5),
         legend.position = 'none')
+
+ggsave(filename = "Read_count_raw.png", reads, path = "../pictures", bg = "white")
 ```
 
 ```{r}
@@ -113,11 +115,11 @@ augmented_counts <-
                                     "21L", "21N",
                                     "22L", "22N")))
   
-augmented_counts |> 
+reads_sig <- augmented_counts |> 
   ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = Sample)) +
   geom_bar(stat = 'identity') +
   coord_flip() +
-  labs(title = 'Number of Reads in Each Sample',
+  labs(title = 'Number of Significant gene reads in Each Sample',
        x = 'Sample',
        y = 'Number of reads') +
   theme_minimal() +
@@ -128,5 +130,7 @@ augmented_counts |>
                                     fill = 'transparent',
                                     size = 0.5),
         legend.position = 'none')
+
+ggsave("Read_count_significant.png", reads_sig, path = "../pictures", bg = "white")
 
 ```
