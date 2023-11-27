@@ -33,7 +33,7 @@ raw_gene_count <- raw_data |>
   summarise()
 ```
 
-```{r}
+```{r fig.height = 7, fig.width = 7 }
 gene_cols <- 
   raw_data |> 
   dplyr::select(starts_with('ENSG')) |> 
@@ -77,7 +77,7 @@ reads <- Sample_count |>
   ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = "cyan")) +
   geom_bar(stat = 'identity') +
   coord_flip() +
-  labs(title = 'Number of Reads in Each Sample',
+  labs(title = 'Number of Raw Reads in Each Sample',
        x = 'Sample',
        y = 'Number of reads') +
   theme_minimal() +
@@ -102,7 +102,7 @@ Total_raw_reads <- Sample_count |>
 augmented_data <- read_tsv('../data/augmented_meta_gene_table.tsv.gz')
 ```
 
-```{r}
+```{r fig.height = 7, fig.width = 7}
 sig_gene_count <- augmented_data |> 
   group_by(gene) |> 
   summarise()
@@ -146,7 +146,7 @@ reads_sig <- augmented_counts |>
   ggplot(aes(x = fct_rev(Sample), y = Read_count, fill = "cyan")) +
   geom_bar(stat = 'identity') +
   coord_flip() +
-  labs(title = 'Number of Significant gene reads in Each Sample',
+  labs(title = 'Number of Reads of Significant Genes in Each Sample',
        x = 'Sample',
        y = 'Number of reads') +
   theme_minimal() +
