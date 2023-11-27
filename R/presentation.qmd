@@ -30,15 +30,38 @@ The dataset used for the study isn't particularly diverse - for instance, only 3
 
 ## Load
 
-We read the data from GSE151243
+![](../pictures/dirty_dataset.png)
 
-``` {.r code-line-numbers="3"}
-# Loading the data
-path_gene = "../data/_raw/GSE151243_Raw_gene_counts_matrix.txt"
-path_meta = "../data/_raw/GSE151243_series_matrix.txt"
-gene_table <- read.table(path_gene, header = TRUE)
-meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
+We have **two different files** from the **Gene Expression Omnibus** (GEO), one containing the metadata and the other the raw gene counts from the RNAseq.
+
+``` {.r code-line-numbers="3-13"}
+# Tidy columns (with no prefixes)
+meta_table <- meta_table |>
+  mutate(
+    Tissue = gsub("tissue: ", "", Tissue),
+    Tissue_type = gsub("tissue_type: ", "", Tissue_type),
+    Patient_id = gsub("patient_id: ", "", Patient_id),
+    Age = gsub("age: ", "", Age),
+    Gender = gsub("gender: ", "", Gender),
+    Race = gsub("race: ", "", Race),
+    Smoker= gsub("smoker: ", "", Smoker),
+    BMI= gsub("bmi: ", "", BMI),
+    Sample = str_split_i(Sample, pattern="_", 2),
+  )
 ```
+
+## How we do it
+
+``` r
+# We join on patient ID
+final_table <- meta_table |>
+  left_join(
+    gene_table,
+    by = "Sample"
+  )
+```
+
+![](../pictures/tidy_dataset.png)
 
 ## Data Cleaning
 
