@@ -98,7 +98,7 @@ chromosomal_dist_downreg <- arranged_data |>
   filter(any(expr_diff <= 1/3)) |> 
   ungroup() |> 
   # fct_rev is used to filp the CHR catagory
-  ggplot(aes(fct_rev(CHR), fill = "cyan")) +
+  ggplot(aes(fct_rev(CHR), fill = "grey")) +
   geom_bar() +
   coord_flip() +
   theme_minimal() +
