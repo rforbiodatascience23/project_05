@@ -93,7 +93,7 @@ meta_gene_table <- meta_gene_table |>
   dplyr::select(-all_of(zero_expression_genes))
 ```
 
-## Removes genes with non-significant change in expression level (p=0.05)
+## Removes genes with non-significant change in expression level (q\<0.05)
 
 Find number of genes before removing genes with non-significant change in expression
 
@@ -177,12 +177,28 @@ sig_data <- meta_gene_table |>
 ```
 
 ```{r}
+# Plotting a nice volcano plot just for visualization purpose (that is why we get rid of the extrem FC values and we only take 2000 samples)
+fc_change <- meta_gene_table |> 
+     dplyr::select(Sample, Tissue_type, all_of(starts_with('ENS'))) |>  
+     pivot_longer(-c(Sample, Tissue_type),
+                  names_to = 'gene', 
+                  values_to = 'expression') |> 
+     group_by(gene, Tissue_type) |>
+     summarise("Expression" = mean(expression)) |>
+     pivot_wider(names_from=Tissue_type, values_from=Expression) |>
+    mutate(FC_change = Lesion/Perilesion)
+
 model_estimates |>
-  left_join(model_data, by=join_by(gene)) |>
-  arrange(p.value) |>
-  slice_head(n = 1000) |>
-  ggplot(aes(x=gene, y=p.value, color=is_significant)) +
-  geom_point()
+  left_join(fc_change, by=join_by(gene)) |>
+  filter(log2(FC_change)>-5 & log2(FC_change)<5) |>
+  sample_n(size=2000) |>
+  ggplot(aes(x=log2(FC_change), y=-log10(p.value), color=is_significant)) +
+  geom_point() +
+# Bonferroni correction used on the data
+  geom_hline(yintercept = -log10(0.05/nrow(model_estimates))) +
+  scale_color_manual(values = c("grey","red"))
+  
+ggsave("../pictures/volcano_plot.png", bg="white")
   
 ```
 
