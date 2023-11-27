@@ -18,7 +18,7 @@ Data from undefined A Hidradenitis Suppurativa Molecular Disease Signature Deriv
 
 ## Trace the Flow of the Project
 
-![](../pictures/flowchart_cut.png) 
+![](../pictures/flowchart_cut.png)
 
 ## Load
 
@@ -31,7 +31,6 @@ path_meta = "../data/_raw/GSE151243_series_matrix.txt"
 gene_table <- read.table(path_gene, header = TRUE)
 meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 ```
-
 
 ## Data Cleaning
 
@@ -75,3 +74,11 @@ How to add a picture from the pictures folder
     -   Adjusted P-value Cutoff Choices
     -   Gene Selection Criteria
         -   Focus only on protein-encoding genes
+
+## Chromosome Distribution of Upregulated genes
+
+![](images/chromosomal_dist_upreg.png){fig-align="left" width="500"}
+
+## Chromosome Distribution of Downregulated genes
+
+![](images/chromosomal_dist_downreg.png){width="500"}
