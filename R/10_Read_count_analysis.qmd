@@ -33,7 +33,7 @@ raw_gene_count <- raw_data |>
   summarise()
 ```
 
-```{r fig.height = 7, fig.width = 7 }
+```{r fig.height = 6.5, fig.width = 6.5 }
 gene_cols <- 
   raw_data |> 
   dplyr::select(starts_with('ENSG')) |> 
@@ -102,7 +102,7 @@ Total_raw_reads <- Sample_count |>
 augmented_data <- read_tsv('../data/augmented_meta_gene_table.tsv.gz')
 ```
 
-```{r fig.height = 7, fig.width = 7}
+```{r fig.height = 6.5, fig.width = 6.5}
 sig_gene_count <- augmented_data |> 
   group_by(gene) |> 
   summarise()
