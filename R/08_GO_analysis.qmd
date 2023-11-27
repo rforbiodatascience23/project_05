@@ -93,7 +93,7 @@ ggsave("../pictures/GO_upreg_overview.png", ureg_overview)
 
 Due to a large number of upregulated pathways identified, we decided to narrow our focus to the top 20 pathways. This prioritization was based on the adjusted p-values (p.adj), which indicate the confidence level in the association of the identified gene groups with each specific pathway.
 
-```{r fig.height=10, fig.width = 6}
+```{r fig.height = 7, fig.width = 6}
 
 
 upreg_GO_res <- 
@@ -136,7 +136,7 @@ upreg_top20 <- upreg_GO_res |>
   coord_flip()  
 
 upreg_top20
-ggsave("../pictures/GO_upreg_top20.png", upreg_top20)
+ggsave("../pictures/GO_upreg_top20.png", upreg_top20, bg = "white")
 ```
 
 ## Gene Ontology analysis for downregulated gene
@@ -168,7 +168,7 @@ downreg_GO_res <-
   mutate(short_description = str_wrap(short_description, 20))  
 ```
 
-```{r fig.height=10, fig.width = 6}
+```{r fig.height = 7, fig.width = 6}
 
 
 downreg_overview <- downreg_GO_res |> 
@@ -200,5 +200,5 @@ downreg_overview <- downreg_GO_res |>
   coord_flip()  # Flip coordinates to make the bars horizontal
 
 downreg_overview
-ggsave("../pictures/GO_downreg_overview.png", downreg_overview)
+ggsave("../pictures/GO_downreg_overview.png", downreg_overview, bg = "white")
 ```
