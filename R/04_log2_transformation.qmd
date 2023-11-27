@@ -12,14 +12,13 @@ library(broom)
 
 ```{r}
 # Output: FALSE
-# Loading the clean dataset
+# Loading the annotated gene dataset
 data = read_tsv(gzfile("../data/annotated_meta_gene_table.tsv.gz"))
 ```
 
 ## log2_transformation of data
 
 ```{r}
-
 aug_data <- data |>
    mutate(log2_Lesion = 
            if_else(Lesion == 0, 
