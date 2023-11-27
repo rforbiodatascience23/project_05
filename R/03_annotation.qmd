@@ -41,8 +41,7 @@ mapping <- AnnotationDbi::select(org.Hs.eg.db,
 
 
 # Use left_join from tidyverse
-annotated_data <- 
-  expression_data |> 
+annotated_data <- expression_data |> 
   left_join(mapping, by = c('gene' = 'ENSEMBL'))
 
 ```
@@ -52,13 +51,11 @@ annotated_data <-
 Upon exploring the merged dataset, we discovered that 32 genes lacked annotations, resulting in NA values in the **`SYMBOL`**, **`CHR`**, and **`GENENAME`** columns. To address this, we employed the **`anti_join`** function to exclude these unannotated genes from our dataset.
 
 ```{r}
-no_annotation_genes <- 
-  annotated_data |> 
+no_annotation_genes <- annotated_data |> 
   filter(is.na(SYMBOL)) 
 
 # Antijoin keep all element that is not in the no_annotation_genes
-annotated_data <- 
-  annotated_data |> 
+annotated_data <- annotated_data |> 
   anti_join(no_annotation_genes, 
             by = 'gene')
 ```
@@ -69,19 +66,16 @@ We found three genes with multiple annotations. To maintain data accuracy, we re
 
 ```{r}
 # Genes with multiple annotation would have more than 20 entrees
-duplicates <- 
-  annotated_data |> 
+duplicates <- annotated_data |> 
   group_by(gene) |> 
   filter(n() > 20) 
 
-mult_annotated_genes <- 
-  duplicates |>
+mult_annotated_genes <- duplicates |>
   dplyr::select(gene, SYMBOL, GENENAME) |> 
   distinct() |> 
   ungroup() 
 
-annotated_data <- 
-  annotated_data |> 
+annotated_data <- annotated_data |> 
   anti_join(mult_annotated_genes, by = 'gene') 
 ```
 
