@@ -83,7 +83,10 @@ chromosomal_dist_upreg <- arranged_data |>
         axis.text = element_text(size = 10)
         )
 
-ggsave("chromosomal_dist_upreg.png", chromosomal_dist_upreg, path = "../pictures")
+ggsave("chromosomal_dist_upreg.png", 
+       chromosomal_dist_upreg, 
+       path = "../pictures", 
+       bg = "white")
 ```
 
 ## Chromosomal distribution of downregulated genes
@@ -112,5 +115,8 @@ chromosomal_dist_downreg <- arranged_data |>
         axis.text = element_text(size = 10)
         )
 
-ggsave("chromosomal_dist_downreg.png", chromosomal_dist_downreg, path = "../pictures")
+ggsave("chromosomal_dist_downreg.png", 
+       chromosomal_dist_downreg, 
+       path = "../pictures",
+       bg = "white")
 ```
