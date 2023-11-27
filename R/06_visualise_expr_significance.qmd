@@ -89,7 +89,7 @@ merged_expr_gene_data <- expr_diff_ranked_data |>
             join_by(gene))
 ```
 
-##  Plot estimate and confidence interval found from lm
+## Plot estimate and confidence interval found from lm
 
 ```{r fig.height = 8}
 
@@ -123,7 +123,7 @@ merged_sig_data |>
                                   face = 'bold')) 
 ```
 
-```{r fig.width = 4, fig.height =`6}
+```{r fig.width = 4, fig.height = 6}
 merged_expr_gene_data |> 
   ggplot(aes(y = mean_log2_expr_change, x = 0)) +
   geom_violin(fill = 'red', alpha = 0.5, adjust = 0.5, width = 0.5) +
@@ -266,9 +266,11 @@ combined_plot <- (p1 | p2 | p3) +
                  theme(legend.position = "right")
 
 combined_plot
+
+ggsave("../pictures/heatmap_overview.png", combined_plot)
 ```
 
-##  Looking at the most upregulated and downregulated genes in the lesional samples compared to the perilesional
+## Looking at the most upregulated and downregulated genes in the lesional samples compared to the perilesional
 
 ```{r fig.width=5, fig.height=5}
 most_upreg <- arranged_merged_expr_gene_data |> 
@@ -278,7 +280,8 @@ midval <- arranged_merged_expr_gene_data |>
   summarize(median = median(mean_log2_expr)) |> 
   pull(median)
 
-most_upreg |>  
+heatmap_upreg <- 
+  most_upreg |>  
   ggplot(aes(x = Tissue_type, 
              y = fct_reorder(SYMBOL, -mean_log2_expr_change), 
              fill = mean_log2_expr)) + 
@@ -308,13 +311,15 @@ most_upreg |>
   # Increase colorbar size
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
 
+ggsave("../pictures/heatmap_upreg.png", heatmap_upreg)
 ```
 
 ```{r fig.width=5, fig.height=5}
 most_downreg <- arranged_merged_expr_gene_data |> 
   slice_tail(n = 40) 
                       
-most_downreg |>  
+heatmap_downreg <- 
+  most_downreg |>  
   ggplot(aes(x = Tissue_type, 
              y = fct_reorder(SYMBOL, mean_log2_expr_change), 
              fill = mean_log2_expr)) + 
@@ -343,6 +348,8 @@ most_downreg |>
   ) +
   # Increase colorbar size
   guides(fill = guide_colourbar(barwidth = 1, barheight = 7)) 
+
+ggsave("../pictures/heatmap_downreg.png", heatmap_downreg)
 ```
 
 ```{r fig.width=10, fig.height=7}
