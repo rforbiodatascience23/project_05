@@ -99,11 +99,15 @@ meta_table <- read.table(path_meta, skip = 33, fill = TRUE, header = TRUE)
 
 ## Chromosome Distribution of Upregulated genes
 
+::: columns
+::: {.column width="50%"}
 ![](../pictures/chromosomal_dist_upreg.png){fig-align="center"}
+:::
 
-## Chromosome Distribution of Downregulated genes
-
+::: {.column width="50%"}
 ![](../pictures/chromosomal_dist_downreg.png){fig-align="center"}
+:::
+:::
 
 ## Read Counts are higher for Raw genes
 
