@@ -142,7 +142,7 @@ model_estimates <- model_data |>
   unnest(model_object_tidy) |> 
   ungroup() |> 
   filter(term == 'Tissue_type') |> 
-  select(c('gene','p.value','estimate','conf.low','conf.high')) |> 
+  dplyr::select(c('gene','p.value','estimate','conf.low','conf.high')) |> 
   mutate('q.value' = p.adjust(p.value)) |> 
   mutate('is_significant' = case_when(q.value > 0.05 ~ 'no',
                                       .default = 'yes') ) 
@@ -230,23 +230,26 @@ gene_expr_diff <- sig_data |>
 
 high_diff_strict <- gene_expr_diff |> 
   group_by(gene) |> 
-  filter(all(expr_diff >= 3) | all(expr_diff <= 1/3)) |>
-  dplyr::select(gene) |> 
-  unique() |> 
-  pull(gene)
+  filter(all(expr_diff >= 3) | all(expr_diff <= 1/3))
 
+high_diff_strict_gene <- 
+  high_diff_strict |> 
+  distinct(gene) |> 
+  pull(gene)
 
 high_diff_lose <- gene_expr_diff |>
   group_by(gene) |> 
-  filter(any(expr_diff >= 3) | any(expr_diff <= 1/3)) |>
-  select(gene) |> 
-  unique() |> 
-  pull(gene) 
+  filter(any(expr_diff >= 3) | any(expr_diff <= 1/3))
+
+high_diff_lose_gene <- 
+  high_diff_lose |> 
+  distinct(gene) |> 
+  pull(gene)
 
 filtering_res <- data.frame(
             unfiltered = gene_number_unfiltred, 
-            filtered_strict = length(high_diff_strict), 
-            filtered_loss = length(high_diff_lose)
+            filtered_strict = length(high_diff_strict_gene), 
+            filtered_loss = length(high_diff_lose_gene)
             )
 
 filtering_res
@@ -254,11 +257,11 @@ filtering_res
 
 ```{r}
 # Applying filtering loss, and remove genes with less that 3-fold change in expression
+# filtered_sig_data <- gene_expr_diff |> 
+#  filter(gene %in% high_diff_lose_gene) 
+
 filtered_sig_data <- gene_expr_diff |> 
-  filter(gene %in% high_diff_lose)
-
-
-
+  semi_join(high_diff_lose, by = 'gene') 
 ```
 
 ```{r}
