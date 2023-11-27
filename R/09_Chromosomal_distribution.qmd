@@ -66,13 +66,13 @@ chromosomal_dist_upreg <- arranged_data |>
   filter(any(expr_diff >= 3)) |> 
   ungroup() |> 
   # fct_rev is used to filp the CHR catagory
-  ggplot(aes(fct_rev(CHR), fill = CHR)) +
+  ggplot(aes(fct_rev(CHR), fill = "grey")) +
   geom_bar() +
   coord_flip() +
   theme_minimal() +
   labs(title = 'Chromosomal distribution of upregulated genes',
        x = 'Chromosome',
-       y = 'n') +
+       y = 'Number of upregulated genes') +
   theme(plot.title = element_text(hjust = 0.5,
                                   vjust = 2,
                                   face = 'bold'),
@@ -98,13 +98,13 @@ chromosomal_dist_downreg <- arranged_data |>
   filter(any(expr_diff <= 1/3)) |> 
   ungroup() |> 
   # fct_rev is used to filp the CHR catagory
-  ggplot(aes(fct_rev(CHR), fill = CHR)) +
+  ggplot(aes(fct_rev(CHR), fill = "cyan")) +
   geom_bar() +
   coord_flip() +
   theme_minimal() +
   labs(title = 'Chromosomal distribution of downregulated genes',
        x = 'Chromosome',
-       y = 'n') +
+       y = 'Number of downregulated genes') +
   theme(plot.title = element_text(hjust = 0.5,
                                   vjust = 2,
                                   face = 'bold'),
