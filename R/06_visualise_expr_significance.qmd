@@ -115,6 +115,7 @@ merged_sig_data |>
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5,
                                   face = 'bold')) 
+ggsave("../pictures/associations_genes.png")
 ```
 
 ## Log2 expression distribution
