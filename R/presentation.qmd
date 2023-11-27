@@ -71,6 +71,38 @@ final_table <- meta_table |>
     3.  Remove gene if expression change for all patients \< 3-fold between the diseased/healthy tissue groups ( [-29]{style="color:orange;"})
 -   [487]{style="color:green;"} genes advance to analysis rounds
 
+## Modeling analysis
+
+Linear regression on a binary value (perilesion or lesion) we want to see which gene expression **varies the most**.
+
+Many **collagens in the most upregulated genes**
+
+![](../pictures/associations_genes.png){fig-align="center"}
+
+## Volcano plot
+
+We can see on a **volcano plot** the correlation between expression change and significance
+
+A small relative change in expression implies that the gene is not significant (Bonferonni correction)
+
+![](../pictures/volcano_plot.png){fig-align="center"}
+
+## Volcano plot
+
+We can see on a **volcano plot** the correlation between expression change and significance
+
+A small relative change in expression implies that the gene is not significant (Bonferonni correction)
+
+![](../pictures/volcano_plot_restricted.png){fig-align="center"}
+
+## Volcano plot
+
+We can see on a **volcano plot** the correlation between expression change and significance
+
+A small relative change in expression implies that the gene is not significant (Bonferonni correction)
+
+![](../pictures/volcano_plot_final.png){fig-align="center"}
+
 ## Annotation
 
 ## Inconsistencies in the number of lesional and non-lesional reads per sample.
@@ -86,27 +118,6 @@ final_table <- meta_table |>
 :::
 
 Some samples have more non-lesional reads, while some have more lesional reads.
-
-## Modeling analysis
-
-Linear regression on a binary value (perilesion or lesion) we want to see which gene expression **varies the most**.
-
-Many **collagens in the most upregulated genes**
-
-![](../pictures/associations_genes.png){fig-align="center"}
-
-## Volcano plot
-
-We can see on a **volcano plot** the correlation between expression change and significance
-
-A small relative change in expression implies that the gene is not significant (Bonferonni correction)
-
-::: {.r-stack}
-![](../pictures/volcano_plot.png){fig-align="center"}
-![](../pictures/volcano_plot_restricted.png){fig-align="center"}
-![](../pictures/volcano_plot_final.png){fig-align="center"}
-
-:::
 
 ## Principal Component Analysis
 
