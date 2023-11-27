@@ -7,9 +7,9 @@ s233403 - subhayan-98
 
 s233036 - emmanuel-mg
 
-##Data sources
+## Data sources
 
-The data cana be accessed from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151243
+The data can be accessed from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE151243
 
 ## Study citation 
 
@@ -18,5 +18,5 @@ Freudenberg JM, Liu Z, Singh J, Thomas E et al. A Hidradenitis Suppurativa molec
 ## Gene expression file 
 https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE151243&format=file&file=GSE151243%5FRaw%5Fgene%5Fcounts%5Fmatrix%2Etxt%2Egz
 
-##Metadata file 
+## Metadata file 
 https://ftp.ncbi.nlm.nih.gov/geo/series/GSE151nnn/GSE151243/matrix/
