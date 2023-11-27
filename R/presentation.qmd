@@ -84,9 +84,16 @@ final_table <- meta_table |>
 ![450 significant genes, 84523661 reads](../pictures/Read_count_significant.png)
 :::
 :::
-Some samples have more non-lesional reads, while some have more lesional reads. 
+
+Some samples have more non-lesional reads, while some have more lesional reads.
 
 ## Modeling analysis
+
+Linear regression on a binary value (perilesion or lesion) we want to see which gene expression **varies the most**.
+
+Many **collagens in the most upregulated genes**
+
+![](../pictures/associations_genes.png)
 
 ## Principal Component Analysis
 
@@ -111,6 +118,7 @@ Some samples have more non-lesional reads, while some have more lesional reads.
 ![](../pictures/chromosomal_dist_downreg.png)
 :::
 :::
+
 Interesting - No downregulated genes in the Y chromosome
 
 ## Most Upregulated and Downregulated Genes
