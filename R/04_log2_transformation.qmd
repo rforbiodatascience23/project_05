@@ -16,7 +16,7 @@ library(broom)
 
 ```{r}
 # Output: FALSE
-# Loading the clean dataset
+# Loading the annotated gene dataset
 data = read_tsv(gzfile("../data/annotated_meta_gene_table.tsv.gz"))
 ```
 
@@ -25,7 +25,6 @@ data = read_tsv(gzfile("../data/annotated_meta_gene_table.tsv.gz"))
 To reduce the range of expression variance while still observing gene expression differences, we applied a log2 transformation to the data, following the method used in the original paper.
 
 ```{r}
-
 aug_data <- data |>
    mutate(log2_Lesion = 
            if_else(Lesion == 0, 
