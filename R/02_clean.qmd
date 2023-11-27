@@ -110,7 +110,6 @@ before_model <- gene_cols |>
 Using linear model to model expression
 
 ```{r}
-# Run time is long
 model_data <- meta_gene_table |> 
   mutate(Tissue_type = ifelse(Tissue_type == "Lesion", 1, 0)) |>  
   dplyr::select(Sample, Tissue_type, all_of(gene_cols)) |>  
@@ -137,7 +136,7 @@ Create categorical variable that classifies genes with significant change in exp
 
 ```{r}
 # Unpack the models and adjust p-values for multiple comparisons
-# significant gene epxpression difference when adjuste p-value > 0.05
+# significant gene expression difference when adjusted p-value < 0.05
 model_estimates <- model_data |> 
   unnest(model_object_tidy) |> 
   ungroup() |> 
@@ -162,7 +161,7 @@ model_res <- data.frame(
 model_res
 ```
 
-Remove the non-significant columns
+Remove the non-significant genes
 
 ```{r}
 meta_cols <- c('Sample',
@@ -179,12 +178,19 @@ sig_data <- meta_gene_table |>
 ```
 
 ```{r}
-# save the full modelled data before significant gene selection
+# save the full modeled data before significant gene selection
 write_tsv(model_estimates, 
           file = gzfile("../data/gene_model_estimates.tsv.gz"))
 ```
 
-## Remove genes that are less than 3-fold up- or down regulated
+
+We now subset gene with at least 3-fold change in expression. We used 2 filtering approaches:
+
+-   **Strict** - where the gene must have 3-fold change across all samples.
+
+-   **Loose** - the gene only need to have 3-fold change in at least 1 sample
+
+We ended up using the loose approach, as no genes satisfied the strict approach
 
 ```{r}
 gene_cols <- sig_data |> 
@@ -192,16 +198,8 @@ gene_cols <- sig_data |>
   colnames()
 ```
 
-We now subset gene with at least 3-fold change in expression. We used 2 filtering approach:
-
--   **Strict** - where the gene must have 3-fold change across all sample.
-
--   **Lose** - the gene only need to have 3-fold change across 1 sample
-
-We ended up with using the lose approach, as no genes satisfied the strict approach
-
 ```{r}
-# Find count before filtering
+# Find gene count before filtering
 gene_number_unfiltred <- 
   length(gene_cols)
 
@@ -224,9 +222,9 @@ gene_expr_diff <- sig_data |>
   mutate(expr_diff = (Lesion / Perilesion)) |> 
   ungroup()
 
-# Using 2 filtering approach
+# Using 2 filtering approaches
 # Strict, the gene must have 3-fold change across all sample
-# Lose, the gene only need to have 3-fold change across 1 sample
+# Loose, the gene needs to have 3-fold change in at least 1 sample
 
 high_diff_strict <- gene_expr_diff |> 
   group_by(gene) |> 
@@ -256,16 +254,14 @@ filtering_res
 ```
 
 ```{r}
-# Applying filtering loss, and remove genes with less that 3-fold change in expression
-# filtered_sig_data <- gene_expr_diff |> 
-#  filter(gene %in% high_diff_lose_gene) 
+# Applying filtering loss, and removing genes with less than 3-fold change in expression
 
 filtered_sig_data <- gene_expr_diff |> 
   semi_join(high_diff_lose, by = 'gene') 
 ```
 
 ```{r}
-# We save the cleaned data frame
+# We save the cleaned and filtered data frame
 write_tsv(filtered_sig_data, 
           file = gzfile("../data/cleaned_meta_gene_table.tsv.gz"))
 ```
