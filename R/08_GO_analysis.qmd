@@ -17,7 +17,7 @@ library(org.Hs.eg.db)
 expression_data <- read_tsv(gzfile('../data/augmented_meta_gene_table.tsv.gz'))
 ```
 
-##  Gene Ontology analysis for genes with upregulated expression
+## Gene Ontology analysis for genes with upregulated expression
 
 ```{r}
 upregulated <- 
@@ -34,24 +34,19 @@ upreg_GO_res <- enrichGO(gene = upregulated,
                    # BP for biological processes
                    ont = 'BP') |>  
           as.data.frame()
-
-#upreg_GO_res <- 
-  #upreg_GO_res |> 
-   #mutate(short_description = ifelse(str_length(Description) > 20,
-   #                                paste0(str_sub(Description, 1, 20), "..."),
-   #                                Description))
           
-#Use paste from tidyverse
+
 upreg_GO_res <- 
   upreg_GO_res |> 
    mutate(short_description = ifelse(str_length(Description) > 20,
-                                   paste(str_sub(Description, 1, 20), "...", ""),
+                                   str_c(str_sub(Description, 1, 20), "...", ""),
                                    Description))  
 ```
 
 ```{r fig.height=12, fig.width = 8}
 
-upreg_GO_res |> 
+ureg_overview <- 
+  upreg_GO_res |> 
   ggplot(aes(x = fct_reorder(short_description, p.adjust), y = Count, fill = p.adjust)) +  
   # stat = 'identity' tells y is the height of bars
   # position = 'dodge' basicallty says that the x-axis is catagorical
@@ -75,7 +70,7 @@ upreg_GO_res |>
         ) +
   coord_flip()  # Flip coordinates to make the bars horizontal
 
-
+ggsave("../pictures/GO_upreg_overview.png", ureg_overview)
 ```
 
 ## Only for top 20 pathways
@@ -86,13 +81,13 @@ upreg_GO_res |>
 upreg_GO_res <- 
   upreg_GO_res |> 
    mutate(short_description = ifelse(str_length(Description) > 30,
-                                   paste0(str_sub(Description, 1, 30), "..."),
+                                   str_c(str_sub(Description, 1, 30), "..."),
                                    Description)) |>    
   mutate(short_description = str_wrap(short_description, 
                                       width = 20)) 
 
 
-upreg_GO_res |> 
+upreg_top20 <- upreg_GO_res |> 
   arrange(desc(p.adjust)) |>
   dplyr::slice(1:20) |> 
   ggplot(aes(x = fct_reorder(short_description, p.adjust), 
@@ -120,6 +115,8 @@ upreg_GO_res |>
     panel.border = element_rect(colour = "black", fill = 'transparent',size = 0.5) 
         ) +
   coord_flip()  # Flip coordinates to make the bars horizontal
+
+ggsave("../pictures/GO_upreg_top.png", upreg_top20)
 ```
 
 ## Gene Ontology analysis for downregulated gene
@@ -140,25 +137,19 @@ downreg_GO_res <- enrichGO(gene = downregulated,
                    ont = 'BP') |>  
           as.data.frame()
 
-#downreg_GO_res <- 
- # downreg_GO_res |> 
-  # mutate(short_description = ifelse(str_length(Description) > 30,
-   #                                paste0(str_sub(Description, 1, 30), "..."),
-    #                               Description)) |> 
- # mutate(short_description = str_wrap(short_description, 20))
-          
-#paste function from tidyverse
+
 downreg_GO_res <- 
   downreg_GO_res |> 
    mutate(short_description = ifelse(str_length(Description) > 30,
-                                   paste(str_sub(Description, 1, 30), "...", ""),
+                                   str_c(str_sub(Description, 1, 30), "...", ""),
                                    Description)) |> 
   mutate(short_description = str_wrap(short_description, 20))  
 ```
 
 ```{r fig.height=10, fig.width = 6}
 
-downreg_GO_res |> 
+
+downreg_overview <- downreg_GO_res |> 
   ggplot(aes(x = fct_reorder(short_description, p.adjust), 
              y = Count, 
              fill = p.adjust)) +  
@@ -184,4 +175,6 @@ downreg_GO_res |>
     panel.border = element_rect(colour = "black", fill = 'transparent',size = 0.5) 
         ) +
   coord_flip()  # Flip coordinates to make the bars horizontal
+
+ggsave("../pictures/GO_downreg_overview.png", downreg_overview)
 ```

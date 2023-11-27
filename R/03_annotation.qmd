@@ -30,11 +30,48 @@ mapping <- AnnotationDbi::select(org.Hs.eg.db,
                            ) |> 
                   as.data.frame()
 
+#annotated_data <- 
+#  expression_data |> 
+#  merge(mapping, by.x = 'gene', by.y = 'ENSEMBL')
 
+# Use left_join from tidyverse
 annotated_data <- 
   expression_data |> 
-  merge(mapping, by.x = 'gene', by.y = 'ENSEMBL')
+  left_join(mapping, by = c('gene' = 'ENSEMBL'))
 
+```
+
+```{r}
+# 32 genes do not have annotation, we will just remove those genes
+
+no_annotation_genes <- 
+  annotated_data |> 
+  filter(is.na(SYMBOL)) 
+
+annotated_data <- 
+  annotated_data |> 
+  anti_join(no_annotation_genes, by = 'gene')
+```
+
+```{r}
+# 3 genes have multiple annotatio. We here delete those genes from our data, 
+# as it is difficult to say which annotation is more correct
+
+duplicates <- 
+  annotated_data |> 
+  group_by(gene) |> 
+  filter(n() > 20) 
+
+mult_annotated_genes <- 
+  duplicates |>
+  dplyr::select(gene, SYMBOL, GENENAME) |> 
+  distinct() |> 
+  ungroup() 
+
+
+annotated_data <- 
+  annotated_data |> 
+  anti_join(mult_annotated_genes, by = 'gene') 
 ```
 
 ```{r}
