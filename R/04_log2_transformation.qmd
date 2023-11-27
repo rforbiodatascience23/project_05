@@ -4,11 +4,15 @@ format: html
 editor: visual
 ---
 
+## Load libraries
+
 ```{r}
 # Output: FALSE
 library(tidyverse)
 library(broom)
 ```
+
+## Load data
 
 ```{r}
 # Output: FALSE
@@ -16,7 +20,9 @@ library(broom)
 data = read_tsv(gzfile("../data/annotated_meta_gene_table.tsv.gz"))
 ```
 
-## log2_transformation of data
+## log2 transformation of expression
+
+To reduce the range of expression variance while still observing gene expression differences, we applied a log2 transformation to the data, following the method used in the original paper.
 
 ```{r}
 
@@ -41,6 +47,8 @@ aug_data <- data |>
          ) 
 
 ```
+
+## Write tsv file
 
 ```{r}
 # We save the augmented data frame

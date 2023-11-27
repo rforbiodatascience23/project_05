@@ -4,13 +4,18 @@ format: html
 editor: visual
 ---
 
+## Reasoning for use Bioconductor packages
+
+To figure out which genes were up or downregulated, we used **`AnnotationDbi`** and **`org.Hs.eg.db`** for annotation. This made it easier to understand the data than just using Ensembl IDs.
+
 ```{r}
 # output: FALSE
 library(tidyverse)
-library(clusterProfiler)
 library(AnnotationDbi)
 library(org.Hs.eg.db)
 ```
+
+## Load cleaned data
 
 ```{r}
 expression_data <- read_tsv(gzfile("../data/cleaned_meta_gene_table.tsv.gz"))
@@ -18,21 +23,20 @@ expression_data <- read_tsv(gzfile("../data/cleaned_meta_gene_table.tsv.gz"))
 
 ## Annotation of genes
 
+We use the **`select`** function from the **`AnnotationDbi`** package to retrieve annotations for our Ensembl genes. Specifically, we extract the gene symbol, gene name, and chromosomal information corresponding to each Ensembl key, using the **`org.Hs.eg.db`** database, which is a comprehensive resource for human gene annotations. We joined the annotation information with our gene expression dataset by using **`left_join`** , ensuring all keys from the expression dataset were retained in the merged annotated dataset.
+
 ```{r}
 # Find the corresponding SYMBOL for all ENSEMBL in org.HS.eg.db 
 mapping <- AnnotationDbi::select(org.Hs.eg.db, 
-                                 keys = keys(org.Hs.eg.db, keytype = "ENSEMBL"),
+                                 keys = keys(org.Hs.eg.db, 
+                                             keytype = "ENSEMBL"),
                                  keytype = "ENSEMBL",
                                  columns = c("SYMBOL",
                                        "GENENAME",
                                        "CHR"
                                        )
                            ) |> 
-                  as.data.frame()
-
-#annotated_data <- 
-#  expression_data |> 
-#  merge(mapping, by.x = 'gene', by.y = 'ENSEMBL')
+                  as_data_frame()
 
 # Use left_join from tidyverse
 annotated_data <- 
@@ -41,22 +45,28 @@ annotated_data <-
 
 ```
 
-```{r}
-# 32 genes do not have annotation, we will just remove those genes
+## Remove genes without annotation
 
+Upon exploring the merged dataset, we discovered that 32 genes lacked annotations, resulting in NA values in the **`SYMBOL`**, **`CHR`**, and **`GENENAME`** columns. To address this, we employed the **`anti_join`** function to exclude these unannotated genes from our dataset.
+
+```{r}
 no_annotation_genes <- 
   annotated_data |> 
   filter(is.na(SYMBOL)) 
 
+# Antijoin keep all element that is not in the no_annotation_genes
 annotated_data <- 
   annotated_data |> 
-  anti_join(no_annotation_genes, by = 'gene')
+  anti_join(no_annotation_genes, 
+            by = 'gene')
 ```
 
-```{r}
-# 3 genes have multiple annotatio. We here delete those genes from our data, 
-# as it is difficult to say which annotation is more correct
+## Remove genes with multiple annotations
 
+We found three genes with multiple annotations. To maintain data accuracy, we removed these genes, as we couldn't determine the most correct annotation for each.
+
+```{r}
+# Genes with multiple annotation would have more than 20 entrees
 duplicates <- 
   annotated_data |> 
   group_by(gene) |> 
@@ -68,11 +78,12 @@ mult_annotated_genes <-
   distinct() |> 
   ungroup() 
 
-
 annotated_data <- 
   annotated_data |> 
   anti_join(mult_annotated_genes, by = 'gene') 
 ```
+
+## Write annotated data as tsv
 
 ```{r}
 write_tsv(annotated_data, gzfile('../data/annotated_meta_gene_table.tsv.gz'))
