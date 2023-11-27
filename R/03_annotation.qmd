@@ -29,14 +29,10 @@ We use the **`select`** function from the **`AnnotationDbi`** package to retriev
 ```{r}
 # Find the corresponding gene SYMBOL for all ENSEMBL in org.HS.eg.db 
 mapping <- AnnotationDbi::select(org.Hs.eg.db, 
-                                 keys = keys(org.Hs.eg.db, 
-                                             keytype = "ENSEMBL"),
+                                 keys = keys(org.Hs.eg.db, keytype = "ENSEMBL"),
                                  keytype = "ENSEMBL",
-                                 columns = c("SYMBOL",
-                                       "GENENAME",
-                                       "CHR"
-                                       )
-                           ) |> 
+                                 columns = c("SYMBOL", "GENENAME", "CHR")
+                                ) |> 
                   as_data_frame()
 
 
