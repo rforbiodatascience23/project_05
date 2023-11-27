@@ -177,7 +177,7 @@ sig_data <- meta_gene_table |>
 ```
 
 ```{r}
-# Plotting a nice volcano plot just for visualization purpose (that is why we get rid of the extrem FC values and we only take 2000 samples)
+# Plotting a volcano plot to see the correlation between change in expression and q.value
 fc_change <- meta_gene_table |> 
      dplyr::select(Sample, Tissue_type, all_of(starts_with('ENS'))) |>  
      pivot_longer(-c(Sample, Tissue_type),
@@ -194,14 +194,13 @@ sig_volcano <- model_estimates |>
 
 model_estimates |>
   left_join(fc_change, by=join_by(gene)) |>
-  filter(log2(FC_change)>-5 & log2(FC_change)<5) |>
   ggplot(aes(x=log2(FC_change), y=-log10(p.value), color=is_significant)) +
   geom_point(aes(x=log2(FC_change), y=-log10(p.value)), 
              color="grey", 
              alpha=0.5) +
   geom_point(data = sig_volcano,
              aes(x=log2(FC_change), y=-log10(p.value)), 
-             color="red")
+             color="red") +
 # Bonferroni correction used on the data
   geom_hline(yintercept = -log10(0.05/nrow(model_estimates)))
   
@@ -219,7 +218,6 @@ selected <- model_estimates |>
 
 model_estimates |>
   left_join(fc_change, by=join_by(gene)) |>
-  filter(log2(FC_change)>-5 & log2(FC_change)<5) |>
   ggplot() +
   geom_point(aes(x=log2(FC_change), y=-log10(p.value)), 
                  color="grey", 
@@ -234,7 +232,7 @@ model_estimates |>
   geom_vline(xintercept = log2(3), 
              linetype="dashed")
   
-ggsave("../pictures/volcano_plot_total.png", 
+ggsave("../pictures/volcano_plot_restricted.png", 
        bg="white")
 ```
 
@@ -315,6 +313,26 @@ filtering_res
 
 filtered_sig_data <- gene_expr_diff |> 
   semi_join(high_diff_lose, by = 'gene') 
+```
+
+```{r}
+selected_final_volcano <- filtered_sig_data |>
+  left_join(fc_change, by=join_by(gene)) |>
+  left_join(model_estimates, by=join_by(gene))
+
+model_estimates |>
+  left_join(fc_change, by=join_by(gene)) |>
+  ggplot() +
+  geom_point(aes(x=log2(FC_change), y=-log10(p.value)), 
+                 color="grey", 
+                 alpha=0.5) +
+  geom_point(data=selected_final_volcano, 
+            aes(x=log2(FC_change), y=-log10(p.value)), 
+            color="red") +
+  geom_hline(yintercept = -log10(0.05/nrow(model_estimates)))
+
+ggsave("../pictures/volcano_plot_final.png", 
+       bg="white")
 ```
 
 ```{r}
